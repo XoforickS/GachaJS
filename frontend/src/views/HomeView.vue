@@ -1,5 +1,23 @@
 <template>
-  <div class="main-bg h-screen bg-no-repeat bg-cover w-full">
+  <div class="main-bg h-screen bg-no-repeat bg-cover w-full overflow-hidden">
+    <div class="absolute right-0 left-0 bottom-0">
+      <div class="flex justify-center items-end mt-2">
+        <img
+          id="leftImage"
+          src="../assets/img/Left.png"
+          :class="{ 'transition mr-0': SummonAnim, 'duration-1000': SummonAnim }"
+          class="mr-52"
+          alt=""
+        />
+        <img
+          id="rightImage"
+          src="../assets/img/Right.png"
+          :class="{ 'transition ml-0': SummonAnim, 'duration-1000': SummonAnim }"
+          class="ml-52"
+          alt=""
+        />
+      </div>
+    </div>
     <nav class="sticky top-0 z-10 w-full px-4 py-1">
       <div class="flex justify-end p-4">
         <div class="absolute top-3 left-5">
@@ -33,7 +51,7 @@
     </nav>
     <div class="max-w-7xl mx-auto text-center">
       <div class="absolute bottom-4 right-0 left-0 w-1/3 mx-auto grid grid-cols-2 font-semibold text-2xl justify-center gap-4">
-        <button id="summonButton" class="bg-white hover:bg-gray-200 cursor-pointer pt-1 pl-6 pr-1 rounded-full transition ease-in-out flex justify-between" @click="summon" :disabled="summonStones === 0">
+        <button id="summonButton" class="bg-white hover:bg-gray-200 cursor-pointer pt-1 pl-6 pr-1 rounded-full transition ease-in-out flex justify-between" @click="startAnimation" :disabled="summonStones === 0">
           <span class="pt-2">Invocation</span> <span class="flex bg-gray-700 rounded-full px-4 py-2 mb-1 text-white"><img src="../assets/img/summon-stone.webp" class="w-6 h-6 mt-[2px] mr-2" />1</span>
         </button>
         <button id="summonMultiButton" class="bg-white hover:bg-gray-200 cursor-pointer pt-1 pl-6 pr-1 rounded-full transition ease-in-out flex justify-between" @click="summonMulti(10)" :disabled="summonStones < 10">
@@ -62,12 +80,12 @@
       <div id="loadingIndicator" ref="loadingIndicator" class="hidden mt-4">
         Invocation en cours...
       </div>
-      <div class="text-white absolute bottom-5 left-5">
-        <img src="" class="rounded-full" alt="">Username
-        <div class="flex space-x-2">
+      <div class="text-white bg-black bg-opacity-80 rounded-xl p-4 absolute w-1/5 text-2xl bottom-3 left-5">
+        <div class="text-left flex justify-between mb-1"><div><img src="" class="rounded-full" alt="">{{authStore.username}}</div><div>Lvl: 21</div></div>
+        <div class="flex space-x-2 mb-1">
           <img src="../assets/svg/xp.svg" class="w-4 h-4" alt="">
-          <div class="h-1 w-full bg-neutral-500 mt-1">
-            <div class="h-1 bg-blue-800" style="width: 45%"></div>
+          <div class="h-3 rounded-full w-full bg-neutral-500 mt-1">
+            <div class="h-3 rounded-full bg-blue-600" style="width: 35%"></div>
           </div>
         </div>
       </div>
@@ -75,9 +93,19 @@
   </div>
 </template>
 
+<script setup>
+import { useAuthStore } from '../stores/auth';
+
+const authStore = useAuthStore();
+
+</script>
+
 <script>
+import { ref } from 'vue';
+
 class Card {
-  constructor(name, image, attack, defense, speed) {
+  constructor(id, name, image, attack, defense, speed) {
+    this.id =  id;
     this.name = name;
     this.image = image;
     this.attack = attack;
@@ -89,6 +117,7 @@ class Card {
 export default {
   data() {
     return {
+      SummonAnim: false,
       availableCards: [],
       account: [],
       loadingIndicator: null,
@@ -108,14 +137,14 @@ export default {
         const cardData = await response.json();
 
         this.availableCards = cardData.map(
-          (card) => new Card(card.name, card.image, card.attack, card.defense, card.speed)
+          (card) => new Card(card.id, card.name, card.image, card.attack, card.defense, card.speed)
         );
       } catch (error) {
         console.error('Error loading card data:', error);
       }
     },
 
-    summon() {
+    async summon() {
       if (this.availableCards.length === 0 || this.summonStones === 0) {
         console.log('Pas de carte disponible à invoquer.');
         return;
@@ -129,7 +158,30 @@ export default {
       const summonedCard = this.availableCards[randomIndex];
 
       this.account.push(summonedCard);
+      console.log(summonedCard)
       this.summonStones--;
+
+      // try {
+      //   console.log('Je rentre in the function')
+      //   const response = await fetch('http://localhost:8000/account_cards/add', {
+      //     method: 'POST',
+      //     headers: {
+      //       'Content-Type': 'application/json',
+      //     },
+      //     body: JSON.stringify({
+      //       user_id: this.authStore.userId,
+      //       card_id: summonedCard.id,
+      //     }),
+      //   });
+
+      //   const data = await response.json();
+
+      //   if (!response.ok) {
+      //     console.error('Failed to add the summoned card to the database:', data.detail);
+      //   }
+      // } catch (error) {
+      //   console.error('Error during the fetch request:', error);
+      // }
 
       setTimeout(() => {
         this.hideLoading();
@@ -166,6 +218,23 @@ export default {
     increaseSummonStones() {
       this.summonStones++;
     },
+
+    startAnimation() {
+      for (let i = 0; i < 2; i++) {
+        setTimeout(() => {
+          this.SummonAnim = true;
+          setTimeout(() => {
+            this.SummonAnim = false;
+          }, 1000);
+        }, i * 2000);
+      }
+      setTimeout(() => {
+        this.SummonAnim = true;
+        setTimeout(() => {
+          this.summon();
+        }, 1500);
+      }, 4000);
+    }
   },
 };
 </script>
@@ -181,8 +250,23 @@ div {
 }
 
 .main-bg{
-  background-image: url('../assets/img/background_home.jpg');
+  background-image: url('../assets/img/background-none.jpg');
   background-size: cover;
   background-repeat: no-repeat;
+}
+#leftImage, #rightImage {
+  transition: opacity 1s ease-in-out, margin 1s ease-in-out;
+}
+
+#leftImage.transition, #rightImage.transition {
+  animation: fadeInOut 2s ease-in-out infinite;
+}
+
+#leftImage.transition {
+  margin-right: 0;
+}
+
+#rightImage.transition {
+  margin-left: 0;
 }
 </style>

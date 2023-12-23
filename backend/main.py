@@ -36,6 +36,22 @@ def get_db():
 def read_root():
     return {"message": "Bienvenue sur l'API du Gacha!"}
 
+@app.post("/register/")
+def register(username: str, email: str, password: str, db: Session = Depends(get_db)):
+    new_user = User(username=username, email=email, password=password)
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    return new_user
+
+@app.post("/login/")
+def login(username: str, password: str, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.username == username, User.password == password).first()
+    if user is None:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+
+    return {"message": "Login successful", "user_id": user.id, "username": user.username, "email": user.email}
+
 @app.get("/cards/")
 def get_all_cards(db: Session = Depends(get_db)):
     cards = db.query(Card).all()
