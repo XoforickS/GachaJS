@@ -2,20 +2,8 @@
   <div class="main-bg h-screen bg-no-repeat bg-cover w-full overflow-hidden">
     <div class="absolute right-0 left-0 bottom-0">
       <div class="flex justify-center items-end mt-2">
-        <img
-          id="leftImage"
-          src="../assets/img/Left.png"
-          :class="{ 'transition mr-0': SummonAnim, 'duration-1000': SummonAnim }"
-          class="mr-52"
-          alt=""
-        />
-        <img
-          id="rightImage"
-          src="../assets/img/Right.png"
-          :class="{ 'transition ml-0': SummonAnim, 'duration-1000': SummonAnim }"
-          class="ml-52"
-          alt=""
-        />
+        <img id="leftImage" src="../assets/img/Left.png" :class="{ 'transition mr-0': SummonAnim, 'duration-1000': SummonAnim }" class="mr-52" alt="" />
+        <img id="rightImage" src="../assets/img/Right.png" :class="{ 'transition ml-0': SummonAnim, 'duration-1000': SummonAnim }" class="ml-52" alt="" />
       </div>
     </div>
     <nav class="sticky top-0 z-10 w-full px-4 py-1">
@@ -35,16 +23,19 @@
             <img src="../assets/img/coin.webp" class="w-6 h-6 mt-[2px]" />
             <span class="ml-4">61 000</span>
           </div>
-          <div class="bg-gray-200 bg-opacity-30 rounded-full px-4">
-            <button class="pr-3">
-              <img src="../assets/svg/collection.svg" class="w-6 h-6 mx-auto pt-1" alt="">
+          <div class="bg-gray-200 bg-opacity-30 rounded-full px-4 py-2 flex justify-center">
+            <RouterLink to="/" class="pr-3">
+              <img src="../assets/img/summon-icon.png" class="w-8 h-8 mx-auto" alt="">
+            </RouterLink>
+            <RouterLink to="/catalogue" class="pr-3">
+              <img src="../assets/svg/collection.svg" class="w-7 h-7 mx-auto" alt="">
+            </RouterLink>
+            <button class="pr-3 -mt-1">
+              <img src="../assets/svg/harvest.svg" class="w-7 h-7 mx-auto" alt="">
             </button>
-            <button class="pr-3">
-              <img src="../assets/svg/summon.svg" class="w-6 h-6 mx-auto" alt="">
-            </button>
-            <button class="pr-3">
-              <img src="../assets/svg/harvest.svg" class="w-6 h-6 mx-auto" alt="">
-            </button>
+            <RouterLink to="/login" class="pr-3">
+              <img src="../assets/svg/settings.svg" class="w-7 h-7 mx-auto" alt="">
+            </RouterLink>
           </div>
         </div>
       </div>
@@ -80,12 +71,14 @@
       <div id="loadingIndicator" ref="loadingIndicator" class="hidden mt-4">
         Invocation en cours...
       </div>
+      <level-up-popup :is-visible="showLevelUpPopup" @close="showLevelUpPopup = false" />
       <div class="text-white bg-black bg-opacity-80 rounded-xl p-4 absolute w-1/5 text-2xl bottom-3 left-5">
-        <div class="text-left flex justify-between mb-1"><div><img src="" class="rounded-full" alt="">{{authStore.username}}</div><div>Lvl: 21</div></div>
+        <div class="text-left flex justify-between mb-1"><div><img src="" class="rounded-full" alt="">{{authStore.username}}</div><div>Nv: {{currentUserInfo.level}}</div></div>
         <div class="flex space-x-2 mb-1">
-          <img src="../assets/svg/xp.svg" class="w-4 h-4" alt="">
-          <div class="h-3 rounded-full w-full bg-neutral-500 mt-1">
-            <div class="h-3 rounded-full bg-blue-600" style="width: 35%"></div>
+          <img src="../assets/svg/xp.svg" class="w-4 h-4 mt-2" alt="">
+          <div class="h-5 group relative rounded-full w-full bg-neutral-500 mt-1">
+            <div class="h-5 rounded-full relative bg-blue-600" :style="{ width: `${currentUserInfo.xp}%` }" :class="{ 'transition-xp': xpBarTransition, 'duration-1000': xpBarTransition }"></div>
+            <span class="hidden group-hover:block absolute top-1 left-1/2 -translate-x-1/2 text-xs">{{currentUserInfo.xp}}%</span>
           </div>
         </div>
       </div>
@@ -93,15 +86,9 @@
   </div>
 </template>
 
-<script setup>
-import { useAuthStore } from '../stores/auth';
-
-const authStore = useAuthStore();
-
-</script>
-
 <script>
-import { ref } from 'vue';
+import { useAuthStore } from '../stores/auth';
+import LevelUpPopup from '../components/LevelUpPopup.vue';
 
 class Card {
   constructor(id, name, image, attack, defense, speed) {
@@ -112,25 +99,58 @@ class Card {
     this.defense = defense;
     this.speed = speed;
   }
-}
+};
+
+class User {
+  constructor(id, username, email, xp, level) {
+    this.id =  id;
+    this.username = username;
+    this.email = email;
+    this.xp = xp;
+    this.level = level;
+  }
+};
 
 export default {
+  components: {
+    LevelUpPopup,
+  },
   data() {
     return {
       SummonAnim: false,
       availableCards: [],
+      currentUserInfo: [],
       account: [],
+      xpBarTransition: true,
       loadingIndicator: null,
       summonStones: 0,
+      showLevelUpPopup: false,
     };
+  },
+  setup(){
+    const authStore = useAuthStore();
+    return {authStore}
   },
   mounted() {
     this.loadingIndicator = this.$refs.loadingIndicator;
+    this.loadCurrentUserInfo();
     this.loadCardData().then(() => {
-      this.setupEventListeners();
+      this.setupEventListeners(); 
     });
   },
   methods: {
+    async loadCurrentUserInfo() {
+      try {
+        const response = await fetch(`http://localhost:8000/users/${this.authStore.userId}`);
+        const responseData = await response.json();
+
+        this.currentUserInfo = new User(responseData.id, responseData.username, responseData.email, responseData.xp, responseData.level);
+        xpBarTransition.value = true;
+      } catch (error) {
+        console.error('Error loading user data:', error);
+      }
+    },
+
     async loadCardData() {
       try {
         const response = await fetch('http://localhost:8000/cards/');
@@ -158,30 +178,68 @@ export default {
       const summonedCard = this.availableCards[randomIndex];
 
       this.account.push(summonedCard);
-      console.log(summonedCard)
+      console.log(summonedCard);
       this.summonStones--;
 
-      // try {
-      //   console.log('Je rentre in the function')
-      //   const response = await fetch('http://localhost:8000/account_cards/add', {
-      //     method: 'POST',
-      //     headers: {
-      //       'Content-Type': 'application/json',
-      //     },
-      //     body: JSON.stringify({
-      //       user_id: this.authStore.userId,
-      //       card_id: summonedCard.id,
-      //     }),
-      //   });
+      try {
+        const newXP = this.currentUserInfo.xp + 2;
+        let newXPOffset = 0;
 
-      //   const data = await response.json();
+        if (newXP >= 100) {
+          newXPOffset = newXP - 100;
+        } else {
+          newXPOffset = newXP;
+        }
 
-      //   if (!response.ok) {
-      //     console.error('Failed to add the summoned card to the database:', data.detail);
-      //   }
-      // } catch (error) {
-      //   console.error('Error during the fetch request:', error);
-      // }
+        const xpUpdateResponse = await fetch(`http://localhost:8000/users/update-xp/${this.authStore.userId}?xp=${newXPOffset}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        const xpUpdateData = await xpUpdateResponse.json();
+
+        if (!xpUpdateResponse.ok) {
+          console.error('Failed to update user XP:', xpUpdateData.detail);
+        } else {
+          const newLevel = this.currentUserInfo.level + 1;
+
+          if (newXP >= 100) {
+            const levelUpdateResponse = await fetch(`http://localhost:8000/users/update-level/${this.authStore.userId}?level=${newLevel}`, {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            });
+
+            const levelUpdateData = await levelUpdateResponse.json();
+
+            if (!levelUpdateResponse.ok) {
+              console.error('Failed to update user level:', levelUpdateData.detail);
+            }
+
+            this.showLevelUpPopup = true;
+          }
+
+          this.loadCurrentUserInfo();
+        }
+
+        const addCardResponse = await fetch(`http://localhost:8000/account_cards/add?user_id=${this.authStore.userId}&card_id=${summonedCard.id}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        const addCardData = await addCardResponse.json();
+
+        if (!addCardResponse.ok) {
+          console.error('Failed to add the summoned card to the database:', addCardData.detail);
+        }
+      } catch (error) {
+        console.error('Error during the fetch request:', error);
+      }
 
       setTimeout(() => {
         this.hideLoading();
@@ -239,7 +297,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 @font-face {
   font-family: myFirstFont;
   src: url(../assets/font/RifficFree-Bold.ttf);
@@ -254,6 +312,7 @@ div {
   background-size: cover;
   background-repeat: no-repeat;
 }
+
 #leftImage, #rightImage {
   transition: opacity 1s ease-in-out, margin 1s ease-in-out;
 }
@@ -268,5 +327,12 @@ div {
 
 #rightImage.transition {
   margin-left: 0;
+}
+.transition-xp {
+  transition: width 1s ease;
+}
+
+.duration-1000 {
+  transition-duration: 1000ms;
 }
 </style>

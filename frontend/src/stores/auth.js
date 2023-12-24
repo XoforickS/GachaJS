@@ -1,6 +1,7 @@
 // auth.js
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
+import router from '../router'
 
 export const useAuthStore = defineStore('auth', () => {
   const userId = ref(localStorage.getItem('userId') || null);
@@ -26,6 +27,8 @@ export const useAuthStore = defineStore('auth', () => {
         localStorage.setItem('userId', data.user_id);
         localStorage.setItem('username', data.username);
         localStorage.setItem('email', data.email);
+
+        router.push('/')
       } else {
         console.error('Login failed:', data.detail);
       }

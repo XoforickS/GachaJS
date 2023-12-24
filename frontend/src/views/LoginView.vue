@@ -25,9 +25,5 @@ const loginPassword = ref('');
 
 async function login() {
   await authStore.login(loginUsername.value, loginPassword.value);
-
-  console.log('User ID:', authStore.userId);
-  console.log('Username:', authStore.username);
-  console.log('Email:', authStore.email);
 }
 </script>

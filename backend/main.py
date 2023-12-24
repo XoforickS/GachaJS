@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from database import SessionLocal, engine
 from models import Base, Card, User, AccountCard
@@ -14,7 +14,7 @@ origins = [
     "http://localhost:3000",
     "http://localhost:8000",
     "http://localhost:8080",
-    "http://127.0.0.1:5173",
+    "http://localhost:5173",
 ]
 
 app.add_middleware(
@@ -73,7 +73,13 @@ def get_user_account_cards(user_id: int, db: Session = Depends(get_db)):
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
 
-    account_cards = db.query(AccountCard).filter(AccountCard.id_user == user_id).all()
+    account_cards = (
+        db.query(AccountCard)
+        .filter(AccountCard.id_user == user_id)
+        .options(joinedload(AccountCard.card))
+        .all()
+    )
+
     return account_cards
 
 @app.post("/account_cards/add")
@@ -90,3 +96,41 @@ def add_account_card(user_id: int, card_id: int, db: Session = Depends(get_db)):
     db.refresh(account_card)
 
     return account_card
+
+@app.get("/users/{user_id}")
+def get_user(user_id: int, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.id == user_id).first()
+
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    return user
+
+@app.get("/users")
+def get_all_users(db: Session = Depends(get_db)):
+    users = db.query(User).all()
+    return users
+
+@app.put("/users/update-xp/{user_id}")
+def update_user_xp(user_id: int, xp: int, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.id == user_id).first()
+
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    user.xp = xp
+    db.commit()
+
+    return {"message": "XP updated successfully"}
+
+@app.put("/users/update-level/{user_id}")
+def update_user_level(user_id: int, level: int, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.id == user_id).first()
+
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    user.level = level
+    db.commit()
+
+    return {"message": "Level updated successfully"}
