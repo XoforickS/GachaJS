@@ -3,7 +3,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session, joinedload
 
 from database import SessionLocal, engine
-from models import Base, Card, User, AccountCard
+from models import Base, Card, User, AccountCard, UserCard
+from pydantic import BaseModel
+from typing import Union
 
 Base.metadata.create_all(bind=engine)
 
@@ -31,6 +33,11 @@ def get_db():
         yield db
     finally:
         db.close()
+        
+class UpgradeCardStats(BaseModel):
+    attack_upgrade: Union[int, None] = None
+    defense_upgrade: Union[int, None] = None
+    speed_upgrade: Union[int, None] = None
 
 @app.get("/")
 def read_root():
@@ -134,3 +141,44 @@ def update_user_level(user_id: int, level: int, db: Session = Depends(get_db)):
     db.commit()
 
     return {"message": "Level updated successfully"}
+
+@app.get("/user_cards/{user_id}/{card_id}")
+def get_user_card_stats(user_id: int, card_id: int, db: Session = Depends(get_db)):
+    user_card = (
+        db.query(UserCard)
+        .filter(UserCard.user_id == user_id, UserCard.card_id == card_id)
+        .first()
+    )
+
+    if user_card is None:
+        raise HTTPException(status_code=404, detail="User card not found")
+
+    return {
+        "user_id": user_card.user_id,
+        "card_id": user_card.card_id,
+        "attack_upgrade": user_card.attack_upgrade,
+        "defense_upgrade": user_card.defense_upgrade,
+        "speed_upgrade": user_card.speed_upgrade,
+    }
+
+@app.put("/user_cards/upgrade/{user_id}/{card_id}")
+def upgrade_card_stats(user_id: int, card_id: int, upgrade_data: UpgradeCardStats, db: Session = Depends(get_db)):
+    user_card = (
+        db.query(UserCard)
+        .filter(UserCard.user_id == user_id, UserCard.card_id == card_id)
+        .first()
+    )
+
+    if user_card is None:
+        raise HTTPException(status_code=404, detail="User card not found")
+
+    if upgrade_data.attack_upgrade:
+        user_card.attack_upgrade = upgrade_data.attack_upgrade
+    if upgrade_data.defense_upgrade is not None:
+        user_card.defense_upgrade = upgrade_data.defense_upgrade
+    if upgrade_data.speed_upgrade is not None:
+        user_card.speed_upgrade = upgrade_data.speed_upgrade
+
+    db.commit()
+
+    return {"message": "User card stats upgraded successfully"}

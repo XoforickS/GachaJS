@@ -1,6 +1,6 @@
 <template>
 <div class="catalogue-bg h-full min-h-screen">
-  <div class="max-w-7xl mx-auto text-center pt-8 text-white">
+  <div class="max-w-7xl mx-auto text-center pt-8 text-white pb-10">
     <div class="absolute top-5 right-8 flex">
       <div class="bg-gray-200 bg-opacity-30 rounded-full px-4 py-2 flex justify-center">
         <RouterLink to="/" class="pr-3">
@@ -19,17 +19,19 @@
     </div>
     <h1 class="text-3xl font-bold mb-4">Catalogue</h1>
     <div class="grid grid-cols-5 gap-4 bg-black bg-opacity-80 p-10 rounded-xl">
-      <div
+      <RouterLink
         v-for="(card, index) in userCards"
         :key="index"
-        class="flex flex-col items-center pt-8"
+        :to="{ name: 'cardDetails', params: { cardId: card.id } }"
       >
-        <img :src="card.image" :alt="card.name" class="w-3/4 mb-2" />
-        <p>{{ card.name }}</p>
-        <p>Attack: {{ card.attack }}</p>
-        <p>Defense: {{ card.defense }}</p>
-        <p>Speed: {{ card.speed }}</p>
-      </div>
+        <div class="flex flex-col items-center pt-8">
+          <img :src="card.image" :alt="card.name" class="w-3/4 mb-2" />
+          <p>{{ card.name }}</p>
+          <p>Attack: {{ card.attack }}</p>
+          <p>Defense: {{ card.defense }}</p>
+          <p>Speed: {{ card.speed }}</p>
+        </div>
+      </RouterLink>
     </div>
   </div>
 </div>
@@ -113,6 +115,14 @@ export default {
 </script>
 
 <style scoped>
+@font-face {
+  font-family: myFirstFont;
+  src: url(../assets/font/RifficFree-Bold.ttf);
+}
+
+div {
+  font-family: myFirstFont;
+}
 .catalogue-bg{
   background-attachment: fixed;
   background-image: url('../assets/img/background_catalogue.jpg');

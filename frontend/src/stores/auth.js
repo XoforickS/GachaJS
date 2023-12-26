@@ -27,8 +27,10 @@ export const useAuthStore = defineStore('auth', () => {
         localStorage.setItem('userId', data.user_id);
         localStorage.setItem('username', data.username);
         localStorage.setItem('email', data.email);
-
-        router.push('/')
+        
+        setTimeout(() => {
+          router.push('/')
+        }, 400);
       } else {
         console.error('Login failed:', data.detail);
       }
@@ -37,5 +39,22 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  return { userId, username, email, login };
+  async function logout() {
+    try{
+      console.log('LOGOUT INSIDE')
+      userId.value = null;
+      username.value = '';
+      email.value = '';
+  
+      localStorage.removeItem('userId');
+      localStorage.removeItem('username');
+      localStorage.removeItem('email');
+    
+      router.push('/login');
+    } catch (error){
+      console.error('Error during logout request:', error);
+    }
+  }
+
+  return { userId, username, email, login, logout };
 });

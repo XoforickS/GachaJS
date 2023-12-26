@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Column, Integer, String, ForeignKey, Float
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -11,7 +11,6 @@ class AccountCard(Base):
     id_user = Column(Integer, ForeignKey("users.id"))
     id_card = Column(Integer, ForeignKey("cards.id"))
     
-    # Define relationship with Card
     card = relationship("Card", back_populates="account_card")
 
 class User(Base):
@@ -33,6 +32,19 @@ class Card(Base):
     attack = Column(Integer)
     defense = Column(Integer)
     speed = Column(Integer)
+    percentage_drop = Column(Float)
     
     account_card = relationship("AccountCard", back_populates="card")
+    user_card = relationship("UserCard", back_populates="cardUser")
     
+class UserCard(Base):
+    __tablename__ = "user_cards"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    card_id = Column(Integer, ForeignKey("cards.id"))
+    attack_upgrade = Column(Integer, default=0)
+    defense_upgrade = Column(Integer, default=0)
+    speed_upgrade = Column(Integer, default=0)
+
+    cardUser = relationship("Card", back_populates="user_card")

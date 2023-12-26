@@ -21,7 +21,7 @@
           </div>
           <div class="flex bg-gray-200 bg-opacity-30 rounded-full pr-3">
             <img src="../assets/img/coin.webp" class="w-6 h-6 mt-[2px]" />
-            <span class="ml-4">61 000</span>
+            <span class="ml-4">{{ coinNumber }}</span>
           </div>
           <div class="bg-gray-200 bg-opacity-30 rounded-full px-4 py-2 flex justify-center">
             <RouterLink to="/" class="pr-3">
@@ -33,23 +33,33 @@
             <button class="pr-3 -mt-1">
               <img src="../assets/svg/harvest.svg" class="w-7 h-7 mx-auto" alt="">
             </button>
-            <RouterLink to="/login" class="pr-3">
-              <img src="../assets/svg/settings.svg" class="w-7 h-7 mx-auto" alt="">
-            </RouterLink>
+            <div class="pr-3 relative">
+              <button @click="dropdownSettings = !dropdownSettings">
+                <img src="../assets/svg/settings.svg" class="w-7 h-7 mx-auto" alt="">
+              </button>
+              <div v-if="dropdownSettings == true" class="absolute right-0 z-10 mt-4 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
+                <div class="py-1" role="none">
+                  <RouterLink to="/login" class="text-gray-700 block px-4 py-2 text-sm" role="menuitem" tabindex="-1" id="menu-item-0">Mon Profil</RouterLink>
+                  <button role="none" @click="logout">
+                    <span class="text-gray-700 block w-full px-4 py-2 text-left text-sm" role="menuitem" tabindex="-1" id="menu-item-3">Se déconnecter</span>
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </nav>
     <div class="max-w-7xl mx-auto text-center">
       <div class="absolute bottom-4 right-0 left-0 w-1/3 mx-auto grid grid-cols-2 font-semibold text-2xl justify-center gap-4">
-        <button id="summonButton" class="bg-white hover:bg-gray-200 cursor-pointer pt-1 pl-6 pr-1 rounded-full transition ease-in-out flex justify-between" @click="startAnimation" :disabled="summonStones === 0">
+        <button id="summonButton" class="bg-white hover:bg-gray-200 cursor-pointer pt-1 pl-6 pr-1 rounded-full transition ease-in-out flex justify-between" @click="startAnimation(1)" :disabled="summonStones === 0">
           <span class="pt-2">Invocation</span> <span class="flex bg-gray-700 rounded-full px-4 py-2 mb-1 text-white"><img src="../assets/img/summon-stone.webp" class="w-6 h-6 mt-[2px] mr-2" />1</span>
         </button>
-        <button id="summonMultiButton" class="bg-white hover:bg-gray-200 cursor-pointer pt-1 pl-6 pr-1 rounded-full transition ease-in-out flex justify-between" @click="summonMulti(10)" :disabled="summonStones < 10">
+        <button id="summonMultiButton" class="bg-white hover:bg-gray-200 cursor-pointer pt-1 pl-6 pr-1 rounded-full transition ease-in-out flex justify-between" @click="startAnimation(2)" :disabled="summonStones < 10">
           <span class="pt-2">Multi-Invocation</span> <span class="flex bg-gray-700 rounded-full px-4 py-2 mb-1 text-white"><img src="../assets/img/summon-stone.webp" class="w-7 h-7 mt-[2px] mr-2" />10</span>
         </button>
       </div>
-      <div v-if="account != 0" id="summonedCardDisplay" class="mt-2 grid grid-cols-5 gap-4 bg-black opacity-75 px-8 py-4 -mt-4 text-white">
+      <div v-if="account != 0" id="summonedCardDisplay" class="fixed top-10 w-4/6 mx-auto mt-2 grid grid-cols-5 gap-4 bg-black bg-opacity-75 rounded-xl px-8 py-4 text-white">
         <div
           v-for="(card, index) in account"
           :key="index"
@@ -58,7 +68,8 @@
           <img
             :src="card.image"
             :alt="card.name"
-            class="w-full h-full object-cover mb-2"
+            id="summonedCard"
+            class="w-full h-full object-cover mb-2 summoned-card-animation"
           />
           <p>{{ card.name }}</p>
           <div class="hidden flex space-x-2">
@@ -68,10 +79,14 @@
           </div>
         </div>
       </div>
+
       <div id="loadingIndicator" ref="loadingIndicator" class="hidden mt-4">
         Invocation en cours...
       </div>
+
+      <img v-if="showExplosion" src="../assets/gif/explosion.gif" alt="Explosion" class="explosion-gif" />
       <level-up-popup :is-visible="showLevelUpPopup" @close="showLevelUpPopup = false" />
+
       <div class="text-white bg-black bg-opacity-80 rounded-xl p-4 absolute w-1/5 text-2xl bottom-3 left-5">
         <div class="text-left flex justify-between mb-1"><div><img src="" class="rounded-full" alt="">{{authStore.username}}</div><div>Nv: {{currentUserInfo.level}}</div></div>
         <div class="flex space-x-2 mb-1">
@@ -91,13 +106,14 @@ import { useAuthStore } from '../stores/auth';
 import LevelUpPopup from '../components/LevelUpPopup.vue';
 
 class Card {
-  constructor(id, name, image, attack, defense, speed) {
+  constructor(id, name, image, attack, defense, speed, percentage_drop) {
     this.id =  id;
     this.name = name;
     this.image = image;
     this.attack = attack;
     this.defense = defense;
     this.speed = speed;
+    this.percentage_drop = percentage_drop
   }
 };
 
@@ -124,7 +140,10 @@ export default {
       xpBarTransition: true,
       loadingIndicator: null,
       summonStones: 0,
+      coinNumber: 0,
       showLevelUpPopup: false,
+      showExplosion: false,
+      dropdownSettings: false,
     };
   },
   setup(){
@@ -145,7 +164,7 @@ export default {
         const responseData = await response.json();
 
         this.currentUserInfo = new User(responseData.id, responseData.username, responseData.email, responseData.xp, responseData.level);
-        xpBarTransition.value = true;
+        this.xpBarTransition = true;
       } catch (error) {
         console.error('Error loading user data:', error);
       }
@@ -157,7 +176,7 @@ export default {
         const cardData = await response.json();
 
         this.availableCards = cardData.map(
-          (card) => new Card(card.id, card.name, card.image, card.attack, card.defense, card.speed)
+          (card) => new Card(card.id, card.name, card.image, card.attack, card.defense, card.speed, card.percentage_drop)
         );
       } catch (error) {
         console.error('Error loading card data:', error);
@@ -172,14 +191,36 @@ export default {
 
       this.showLoading();
 
-      const randomIndex = Math.floor(
-        Math.random() * this.availableCards.length
-      );
-      const summonedCard = this.availableCards[randomIndex];
+      let selectedCard;
 
-      this.account.push(summonedCard);
-      console.log(summonedCard);
+      const totalPercentage = this.availableCards.reduce((acc, card) => acc + card.percentage_drop, 0);
+
+      const randomNumber = Math.random() * totalPercentage;
+
+      let cumulativePercentage = 0;
+      for (const card of this.availableCards) {
+        cumulativePercentage += card.percentage_drop;
+        if (randomNumber <= cumulativePercentage) {
+          selectedCard = card;
+          break;
+        }
+      }
+
+      if (selectedCard && selectedCard.percentage_drop < 15) {
+        await this.showExplosionAnimation();
+      }
+
+      this.account.push(selectedCard);
+      console.log(selectedCard);
       this.summonStones--;
+      
+      this.$nextTick(() => {
+        const summonedCardElement = document.getElementById('summonedCardDisplay');
+
+        if (summonedCardElement) {
+          summonedCardElement.classList.add('summoned-card-animation');
+        }
+      });
 
       try {
         const newXP = this.currentUserInfo.xp + 2;
@@ -215,6 +256,8 @@ export default {
 
             const levelUpdateData = await levelUpdateResponse.json();
 
+            this.coinNumber += 1500;
+
             if (!levelUpdateResponse.ok) {
               console.error('Failed to update user level:', levelUpdateData.detail);
             }
@@ -225,7 +268,7 @@ export default {
           this.loadCurrentUserInfo();
         }
 
-        const addCardResponse = await fetch(`http://localhost:8000/account_cards/add?user_id=${this.authStore.userId}&card_id=${summonedCard.id}`, {
+        const addCardResponse = await fetch(`http://localhost:8000/account_cards/add?user_id=${this.authStore.userId}&card_id=${selectedCard.id}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -243,10 +286,17 @@ export default {
 
       setTimeout(() => {
         this.hideLoading();
+        this.$nextTick(() => {
+          const summonedCardElement = document.getElementById('summonedCard');
+
+          if (summonedCardElement) {
+            summonedCardElement.classList.remove('summoned-card-animation');
+          }
+        });
       }, 1000);
     },
 
-    summonMulti(count) {
+    async summonMulti(count) {
       if (this.availableCards.length === 0 || this.summonStones < count) {
         console.log('Pas assez de pierres pour invoquer!');
         return;
@@ -255,10 +305,48 @@ export default {
       this.showLoading();
 
       for (let i = 0; i < count; i++) {
-        this.summon();
+        await this.summon();
+        await new Promise(resolve => setTimeout(resolve, 1000));
       }
 
-      this.summonStones - 10;
+      const newXP = this.currentUserInfo.xp + 8;
+      const newXPOffset = newXP >= 100 ? newXP - 100 : newXP;
+
+      const xpUpdateResponse = await fetch(`http://localhost:8000/users/update-xp/${this.authStore.userId}?xp=${newXPOffset}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const xpUpdateData = await xpUpdateResponse.json();
+
+      if (!xpUpdateResponse.ok) {
+        console.error('Failed to update user XP:', xpUpdateData.detail);
+      } else {
+        const newLevel = this.currentUserInfo.level + Math.floor(newXP / 100);
+
+        if (newXP >= 100) {
+          const levelUpdateResponse = await fetch(`http://localhost:8000/users/update-level/${this.authStore.userId}?level=${newLevel}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+
+          const levelUpdateData = await levelUpdateResponse.json();
+
+          if (!levelUpdateResponse.ok) {
+            console.error('Failed to update user level:', levelUpdateData.detail);
+          }
+
+          this.showLevelUpPopup = true;
+        }
+
+        this.loadCurrentUserInfo();
+      }
+
+      this.summonStones - count;
 
       setTimeout(() => {
         this.hideLoading();
@@ -277,7 +365,20 @@ export default {
       this.summonStones++;
     },
 
-    startAnimation() {
+    async showExplosionAnimation() {
+      this.showExplosion = true;
+
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      this.showExplosion = false;
+    },
+
+    async logout() {
+      console.log('logout ???')
+      await this.authStore.logout
+    },
+
+    startAnimation(id) {
       for (let i = 0; i < 2; i++) {
         setTimeout(() => {
           this.SummonAnim = true;
@@ -289,7 +390,11 @@ export default {
       setTimeout(() => {
         this.SummonAnim = true;
         setTimeout(() => {
-          this.summon();
+          if (id == 1) {
+            this.summon();
+          } else {
+            this.summonMulti(10);
+          }
         }, 1500);
       }, 4000);
     }
@@ -297,7 +402,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 @font-face {
   font-family: myFirstFont;
   src: url(../assets/font/RifficFree-Bold.ttf);
@@ -334,5 +439,27 @@ div {
 
 .duration-1000 {
   transition-duration: 1000ms;
+}
+.explosion-gif {
+  position: fixed;
+  top: 38%;
+  left: 52%;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+}
+
+.summoned-card-animation {
+  animation: fadeIn 0.5s ease-in-out; /* You can adjust the animation properties */
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 </style>
