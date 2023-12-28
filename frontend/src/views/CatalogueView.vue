@@ -17,38 +17,73 @@
         </RouterLink>
       </div>
     </div>
-    <h1 class="text-3xl font-bold mb-4">Catalogue</h1>
+    <h1 class="text-3xl font-bold mb-4">Catalogue des cartes</h1>
     <div class="grid grid-cols-5 gap-4 bg-black bg-opacity-80 p-10 rounded-xl">
       <RouterLink
-        v-for="(card, index) in userCards"
+        v-for="(card, index) in uniqueCards"
         :key="index"
         :to="{ name: 'cardDetails', params: { cardId: card.id } }"
       >
         <div class="flex flex-col items-center pt-8">
           <img :src="card.image" :alt="card.name" class="w-3/4 mb-2" />
           <p>{{ card.name }}</p>
-          <p>Attack: {{ card.attack }}</p>
-          <p>Defense: {{ card.defense }}</p>
-          <p>Speed: {{ card.speed }}</p>
+          <p>Attack: {{ card.attack + card.attackUpgrade }}%</p>
+          <p>Defense: {{ card.defense + card.defenseUpgrade }}%</p>
+          <p>Speed: {{ card.speed + card.speedUpgrade }}%</p>
+          <p v-if="card.duplicateCount > 1">x{{ card.duplicateCount }}</p>
         </div>
       </RouterLink>
+    </div>
+    <h1 class="text-3xl font-bold my-4">Catalogue des Items</h1>
+    <div class="grid grid-cols-5 gap-4 bg-black bg-opacity-80 p-10 rounded-xl">
+      <div
+        v-for="(items, index) in uniqueEquipment"
+        :key="index"
+      >
+        <div class="flex flex-col items-center pt-8">
+          <img :src="items.image" :alt="items.name" class="w-3/4 mb-2" />
+          <p>{{ items.name }}</p>
+          <p>Attack: {{ items.attack }}%</p>
+          <p>Defense: {{ items.defense }}%</p>
+          <p>Speed: {{ items.speed }}%</p>
+          <p v-if="items.duplicateCount > 1">x{{ items.duplicateCount }}</p>
+        </div>
+      </div>
     </div>
   </div>
 </div>
 </template>
 
+
 <script>
 import { useAuthStore } from '../stores/auth';
 import { ref, onMounted } from 'vue';
 
+
 class Card {
-  constructor(id, name, image, attack, defense, speed) {
+  constructor(id, name, image, attack, defense, speed, duplicateCount, attackUpgrade, defenseUpgrade, speedUpgrade) {
     this.id = id;
     this.name = name;
     this.image = image;
     this.attack = attack;
     this.defense = defense;
     this.speed = speed;
+    this.duplicateCount = duplicateCount;
+    this.attackUpgrade = attackUpgrade;
+    this.defenseUpgrade = defenseUpgrade;
+    this.speedUpgrade = speedUpgrade;
+  }
+}
+
+class Equipment {
+  constructor(id, name, image, attack, defense, speed, rarity) {
+    this.id = id;
+    this.name = name;
+    this.image = image;
+    this.attack = attack;
+    this.defense = defense;
+    this.speed = speed;
+    this.rarity = rarity;
   }
 }
 
@@ -56,60 +91,100 @@ export default {
   setup() {
     const authStore = useAuthStore();
     const userCards = ref([]);
+    const userEquipment = ref([]);
+    const uniqueCards = ref([]);
+    const uniqueEquipment = ref([]);
 
     const loadCardData = async () => {
       try {
-        const response = await fetch(`http://localhost:8000/account_cards/${authStore.userId}`);
-        const responseData = await response.json();
+        const responseCards = await fetch(`http://localhost:8000/account_cards/${authStore.userId}`);
+        const responseUpgrades = await fetch(`http://localhost:8000/user_cards/upgrades/${authStore.userId}`);
+        const responseCounts = await fetch(`http://localhost:8000/account_cards/counts/${authStore.userId}`);
 
-        const cardMap = new Map();
+        const responseDataCards = await responseCards.json();
+        const responseDataUpgrades = await responseUpgrades.json();
+        const responseCountsData = await responseCounts.json();
 
-        responseData.forEach((item) => {
-          const cardData = item.card;
-          const cardKey = `${cardData.id}-${cardData.name}`;
+        const cardCountsMap = new Map();
 
-          if (cardMap.has(cardKey)) {
-            // Increment count if card is already in the map
-            cardMap.set(cardKey, cardMap.get(cardKey) + 1);
-          } else {
-            // Add card to the map with count 1
-            cardMap.set(cardKey, 1);
-          }
+        responseCountsData.forEach((item) => {
+          const cardKey = `${item.card_id}`;
+          cardCountsMap.set(cardKey, item.count);
         });
 
-        // Create Card instances and handle duplicates
-        userCards.value = responseData.reduce((result, item) => {
+        userCards.value = responseDataCards.map((item) => {
           const cardData = item.card;
-          const cardKey = `${cardData.id}-${cardData.name}`;
-          const duplicateCount = cardMap.get(cardKey);
+          const cardKey = `${cardData.id}`;
+          const duplicateCount = cardCountsMap.get(cardKey) || 1;
+          const upgradeData = cardCountsMap.has(cardKey)
+            ? responseDataUpgrades.find((upgrade) => upgrade.card_id === cardData.id)
+            : {};
 
-          // If there are duplicates, add a duplicate count to the card name
-          const cardName = duplicateCount > 1 ? `${cardData.name} x${duplicateCount}` : cardData.name;
+          return new Card(
+            cardData.id,
+            cardData.name,
+            cardData.image,
+            cardData.attack,
+            cardData.defense,
+            cardData.speed,
+            duplicateCount,
+            upgradeData.attack_upgrade || 0,
+            upgradeData.defense_upgrade || 0,
+            upgradeData.speed_upgrade || 0
+          );
+        });
 
-          // Only add the card to the result if it's not already added
-          if (!result.some((card) => card.name === cardName)) {
-            result.push(new Card(
-              cardData.id,
-              cardName,
-              cardData.image,
-              cardData.attack,
-              cardData.defense,
-              cardData.speed
-            ));
-          }
-
-          return result;
-        }, []);
+        uniqueCards.value = [...new Set(userCards.value.map((card) => card.id))].map((id) => {
+          return userCards.value.find((card) => card.id === id);
+        });
       } catch (error) {
         console.error('Error loading card data:', error);
       }
     };
 
+    const loadEquipmentData = async () => {
+      try {
+        const responseEquipment = await fetch(`http://localhost:8000/account_equipments/${authStore.userId}`);
+        const responseDataEquipment = await responseEquipment.json();
+
+        const equipmentCountsMap = new Map();
+
+        responseDataEquipment.forEach((item) => {
+          const equipmentKey = `${item.equipment_id}`;
+          equipmentCountsMap.set(equipmentKey, (equipmentCountsMap.get(equipmentKey) || 0) + 1);
+        });
+
+        userEquipment.value = responseDataEquipment.map((item) => {
+          const equipmentData = item.equipment;
+          const equipmentKey = `${equipmentData.id}`;
+          const duplicateCount = equipmentCountsMap.get(equipmentKey) || 1;
+
+          return new Equipment(
+            equipmentData.id,
+            equipmentData.name,
+            equipmentData.image,
+            equipmentData.attack,
+            equipmentData.defense,
+            equipmentData.speed,
+            equipmentData.rarity,
+            duplicateCount
+          );
+        });
+
+        uniqueEquipment.value = [...new Set(userEquipment.value.map((equipment) => equipment.id))].map((id) => {
+          return userEquipment.value.find((equipment) => equipment.id === id);
+        });
+      } catch (error) {
+        console.error('Error loading equipment data:', error);
+      }
+    };
+
     onMounted(() => {
       loadCardData();
+      loadEquipmentData();
     });
 
-    return { userCards };
+    return { uniqueCards, userEquipment, uniqueEquipment };
   },
 };
 </script>
