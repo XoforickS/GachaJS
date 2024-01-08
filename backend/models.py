@@ -37,7 +37,8 @@ class User(Base):
     equipment_stone = Column(Integer, nullable=False, default=0)
     
     account_equipment = relationship("AccountEquipment", back_populates="user")
-    
+    teams = relationship("Team", back_populates="user")
+
 class Card(Base):
     __tablename__ = "cards"
 
@@ -77,3 +78,16 @@ class Equipment(Base):
     rarity = Column(String)
     
     account_equipment = relationship("AccountEquipment", back_populates="equipment")
+
+class Team(Base):
+    __tablename__ = "teams"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    card1_id = Column(Integer, ForeignKey("cards.id"))
+    card2_id = Column(Integer, ForeignKey("cards.id"))
+    card3_id = Column(Integer, ForeignKey("cards.id"))
+    card4_id = Column(Integer, ForeignKey("cards.id"))
+    card5_id = Column(Integer, ForeignKey("cards.id"))
+
+    user = relationship("User", back_populates="teams")

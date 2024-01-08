@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session, joinedload
 
 from database import SessionLocal, engine
-from models import Base, Card, User, AccountCard, UserCard, Equipment, AccountEquipment
+from models import Base, Card, User, AccountCard, UserCard, Equipment, AccountEquipment, Team
 from pydantic import BaseModel
 from typing import Union, List
 from sqlalchemy import func, and_ 
@@ -341,3 +341,44 @@ def upgrade_card_stats(user_id: int, card_id: int, upgrade_data: UpgradeCardStat
     db.commit()
 
     return {"message": "User card stats upgraded successfully"}
+
+@app.get("/teams/")
+def get_all_teams(db: Session = Depends(get_db)):
+    teams = db.query(Team).all()
+    return teams
+
+@app.get("/teams/{team_id}")
+def get_team(team_id: int, db: Session = Depends(get_db)):
+    team = db.query(Team).filter(Team.id == team_id).first()
+
+    if team is None:
+        raise HTTPException(status_code=404, detail="Team not found")
+
+    return team
+
+@app.post("/teams/add")
+def add_team(user_id: int, card_ids: List[int], db: Session = Depends(get_db)):
+    db_user = db.query(User).filter(User.id == user_id).first()
+
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    for card_id in card_ids:
+        db_card = db.query(Card).filter(Card.id == card_id).first()
+        if db_card is None:
+            raise HTTPException(status_code=404, detail=f"Card with ID {card_id} not found")
+
+    team = Team(
+        user_id=user_id,
+        card1_id=card_ids[0],
+        card2_id=card_ids[1],
+        card3_id=card_ids[2],
+        card4_id=card_ids[3],
+        card5_id=card_ids[4]
+    )
+
+    db.add(team)
+    db.commit()
+    db.refresh(team)
+
+    return team
