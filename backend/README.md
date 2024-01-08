@@ -16,6 +16,10 @@ pip install "uvicorn[standard]"
 pip install fastapi[all] uvicorn sqlalchemy
 ```
 
+```sh
+pip install mysql-connector-python
+```
+
 ### Developpement
 
 ```sh
