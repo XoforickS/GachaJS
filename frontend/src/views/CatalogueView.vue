@@ -200,7 +200,7 @@ div {
 }
 .catalogue-bg{
   background-attachment: fixed;
-  background-image: url('../assets/img/background_catalogue.jpg');
+  background-image: url('../assets/img/background_tavern.png');
   background-size: cover;
   background-repeat: no-repeat;
 }

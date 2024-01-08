@@ -683,7 +683,7 @@ div {
 }
 
 .main-bg{
-  background-image: url('../assets/img/background-none.jpg');
+  background-image: url('../assets/img/background_ia.png');
   background-size: cover;
   background-repeat: no-repeat;
 }
