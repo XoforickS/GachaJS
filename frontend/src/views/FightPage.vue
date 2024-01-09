@@ -23,7 +23,7 @@
     </div>
 
     <ul class="absolute bottom-4 left-1/2 transform -translate-x-1/2 mx-auto flex justify-center w-7/12">
-      <li v-for="card in flattenedCurrentTeam" :key="card.id" class="bg-white bg-opacity-80 mx-4 rounded-lg">
+      <li v-for="card in flattenedCurrentTeam" :key="card.id" class="bg-white bg-opacity-80 mx-4 rounded-lg" :class="{ 'attack-animation': cardAttacked === card.id }">
         <div class="relative text-center">
           <img :src="card.image" alt="">
           <div>{{ card.name }}</div>
@@ -73,6 +73,7 @@ export default {
       hit_marker: false,
       selectedEnemy: null,
       selectedCard: null,
+      cardAttacked: null,
       enemy1Defense: 100,
       enemy2Defense: 100,
       enemy3Defense: 100,
@@ -156,7 +157,13 @@ export default {
           break;
       }
 
+      this.cardAttacked = card_id;
+
       this.hit_marker = false;
+
+      setTimeout(() => {
+        this.cardAttacked = null;
+      }, 500);
     },
     getEnemyDefense(enemyId) {
       switch (enemyId) {
@@ -166,11 +173,10 @@ export default {
           return this.enemy2Defense;
         case 3:
           return this.enemy3Defense;
-        // Add more cases for additional enemies if needed
 
         default:
           console.error('Invalid enemyId:', enemyId);
-          return 0; // or any default value
+          return 0;
       }
     },
   },
@@ -204,5 +210,9 @@ export default {
 
 .duration-1000 {
   transition-duration: 2000ms;
+}
+.attack-animation {
+  transform: scale(1.2) translateY(-40px);
+  transition: transform 0.5s ease-in-out;
 }
 </style>
