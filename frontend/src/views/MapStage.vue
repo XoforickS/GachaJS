@@ -1,21 +1,21 @@
 <template>
-  <div class="grid grid-cols-3 items-center text-center h-screen ">
-    <router-link to="/prepare/1" :class="{ 'bg-gray-200': currentUserInfo.currentStage < 1 }" :disabled="currentUserInfo.currentStage < 1">
+  <div class="grid grid-cols-3 items-center text-center h-screen custom-bg">
+    <router-link to="/prepare/1" class="py-10 bg-white" :class="{ 'bg-gray-500': currentUserInfo.currentStage < 1 }" :disabled="currentUserInfo.currentStage < 1">
         Stage 1-1
     </router-link>
-    <router-link to="/prepare/2" :class="{ 'bg-gray-200': currentUserInfo.currentStage < 2 }" :disabled="currentUserInfo.currentStage < 2">
+    <router-link to="/prepare/2" class="py-10 bg-white" :class="{ 'bg-gray-500': currentUserInfo.currentStage < 2 }" :disabled="currentUserInfo.currentStage < 2">
         Stage 1-2
     </router-link>
-    <router-link to="/prepare/3" :class="{ 'bg-gray-200': currentUserInfo.currentStage < 3 }" :disabled="currentUserInfo.currentStage < 3">
+    <router-link to="/prepare/3" class="py-10 bg-white" :class="{ 'bg-gray-500': currentUserInfo.currentStage < 3 }" :disabled="currentUserInfo.currentStage < 3">
         Stage 1-3
     </router-link>
-    <router-link to="/prepare/4" :class="{ 'bg-gray-200': currentUserInfo.currentStage < 4 }" :disabled="currentUserInfo.currentStage < 4">
+    <router-link to="/prepare/4" class="py-10 bg-white" :class="{ 'bg-gray-500': currentUserInfo.currentStage < 4 }" :disabled="currentUserInfo.currentStage < 4">
         Stage 2-1
     </router-link>
-    <router-link to="/prepare/5" :class="{ 'bg-gray-200': currentUserInfo.currentStage < 5 }" :disabled="currentUserInfo.currentStage < 5">
+    <router-link to="/prepare/5" class="py-10 bg-white" :class="{ 'bg-gray-500': currentUserInfo.currentStage < 5 }" :disabled="currentUserInfo.currentStage < 5">
         Stage 2-2
     </router-link>
-    <router-link to="/prepare/6" :class="{ 'bg-gray-200': currentUserInfo.currentStage < 6 }" :disabled="currentUserInfo.currentStage < 6">
+    <router-link to="/prepare/6" class="py-10 bg-white" :class="{ 'bg-gray-500': currentUserInfo.currentStage < 6 }" :disabled="currentUserInfo.currentStage < 6">
         Stage 2-3
     </router-link>
   </div>
@@ -80,7 +80,7 @@ export default {
 
 <style scoped>
 .custom-bg{
-  background-image: url('../assets/img/background_tavern.png');
+  background-image: url('../assets/img/map.jpg');
   background-size: cover;
   background-repeat: no-repeat;
 }
