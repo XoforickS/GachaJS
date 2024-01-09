@@ -1,5 +1,5 @@
 <template>
-  <div class="grid grid-cols-3 items-center text-center h-screen">
+  <div class="grid grid-cols-3 items-center text-center h-screen ">
     <router-link to="/prepare/1" :class="{ 'bg-gray-200': currentUserInfo.currentStage < 1 }" :disabled="currentUserInfo.currentStage < 1">
         Stage 1-1
     </router-link>
@@ -77,3 +77,11 @@ export default {
 }
 
 </script>
+
+<style scoped>
+.custom-bg{
+  background-image: url('../assets/img/background_tavern.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+</style>

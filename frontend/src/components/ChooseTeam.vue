@@ -21,6 +21,7 @@
         </div>
       </ul>
     </div>
+    <button @click="saveTeam">Sauvegarder</button>
   </div>
 </template>
 

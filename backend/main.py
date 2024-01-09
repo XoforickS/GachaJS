@@ -363,28 +363,26 @@ def get_all_teams(db: Session = Depends(get_db)):
     teams = db.query(Team).all()
     return teams
 
-# @app.get("/teams/{team_id}")
-# def get_team(team_id: int, db: Session = Depends(get_db)):
-#     team = (
-#         db.query(Team)
-#         .join(User)  # Join User relationship
-#         .join(Card, aliased=True, from_joinpoint=True)  # Join Card relationship for each card
-#         .filter(Team.id == team_id)
-#         .options(
-#             joinedload(Team.user),
-#             joinedload(Team.card1),
-#             joinedload(Team.card2),
-#             joinedload(Team.card3),
-#             joinedload(Team.card4),
-#             joinedload(Team.card5),
-#         )
-#         .first()
-#     )
+@app.get("/teams/{userId}")
+def get_team(userId: int, db: Session = Depends(get_db)):
+    team = (
+        db.query(Team)
+        .filter(Team.user_id == userId)
+        .options(
+            joinedload(Team.user),
+            joinedload(Team.card1),
+            joinedload(Team.card2),
+            joinedload(Team.card3),
+            joinedload(Team.card4),
+            joinedload(Team.card5),
+        )
+        .first()
+    )
 
-#     if team is None:
-#         raise HTTPException(status_code=404, detail="Team not found")
+    if team is None:
+        raise HTTPException(status_code=404, detail="Team not found")
 
-#     return team
+    return team
 
 @app.post("/teams/add")
 def add_team(user_id: int, card_ids: List[int], db: Session = Depends(get_db)):

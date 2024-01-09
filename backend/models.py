@@ -40,20 +40,6 @@ class User(Base):
     
     account_equipment = relationship("AccountEquipment", back_populates="user")
     teams = relationship("Team", back_populates="user")
-
-class Card(Base):
-    __tablename__ = "cards"
-
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String)
-    image = Column(String)
-    attack = Column(Integer)
-    defense = Column(Integer)
-    speed = Column(Integer)
-    percentage_drop = Column(Float)
-    
-    account_card = relationship("AccountCard", back_populates="card")
-    user_card = relationship("UserCard", back_populates="cardUser")
     
 class UserCard(Base):
     __tablename__ = "user_cards"
@@ -94,6 +80,31 @@ class Team(Base):
     stage_id = Column(Integer)
 
     user = relationship("User", back_populates="teams")
+    card1 = relationship("Card", foreign_keys=[card1_id], back_populates="team1")
+    card2 = relationship("Card", foreign_keys=[card2_id], back_populates="team2")
+    card3 = relationship("Card", foreign_keys=[card3_id], back_populates="team3")
+    card4 = relationship("Card", foreign_keys=[card4_id], back_populates="team4")
+    card5 = relationship("Card", foreign_keys=[card5_id], back_populates="team5")
+
+
+class Card(Base):
+    __tablename__ = "cards"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String)
+    image = Column(String)
+    attack = Column(Integer)
+    defense = Column(Integer)
+    speed = Column(Integer)
+    percentage_drop = Column(Float)
+    
+    account_card = relationship("AccountCard", back_populates="card")
+    user_card = relationship("UserCard", back_populates="cardUser")
+    team1 = relationship("Team", foreign_keys=[Team.card1_id], back_populates="card1")
+    team2 = relationship("Team", foreign_keys=[Team.card2_id], back_populates="card2")
+    team3 = relationship("Team", foreign_keys=[Team.card3_id], back_populates="card3")
+    team4 = relationship("Team", foreign_keys=[Team.card4_id], back_populates="card4")
+    team5 = relationship("Team", foreign_keys=[Team.card5_id], back_populates="card5")
 
 
 class StageFight(Base):

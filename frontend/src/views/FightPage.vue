@@ -1,21 +1,21 @@
 <template>
   <div>
-    <h1>Fight Page</h1>
-
-    <h2>Your Team</h2>
-    <ul class="flex justify-center">
-      <li v-for="card in currentTeam" :key="card.id">
-        <div class="relative">
-          <img :src="card.image" alt="">
-        </div>
-      </li>
-    </ul>
+    <h1 class="text-2xl">Combat Stage 1-1</h1>
 
     <h2>Enemies</h2>
-    <ul class="flex justify-center">
-      <li v-for="enemy in enemies" :key="enemy.id">
+    <!-- <ul class="flex justify-center">
+      <li v-for="enemy in stageFight" :key="enemy.id">
         <div class="relative">
           <img :src="enemy.image" alt="">
+        </div>
+      </li>
+    </ul> -->
+    <h2>Your Team</h2>
+    <ul class="flex justify-center">
+      <li v-for="card in flattenedCurrentTeam" :key="card.id">
+        <div class="relative">
+          <img :src="card.image" alt="">
+          <div>{{ card.name }} - {{ card.attack }} / {{ card.defense }} / {{ card.speed }}</div>
         </div>
       </li>
     </ul>
@@ -54,8 +54,8 @@ class Card {
 export default {
   data() {
     return {
-      currentTeam: [],
-      enemies: [],
+      currentTeam: {},
+      stageFight: [],
       currentUserInfo: [],
     };
   },
@@ -66,7 +66,6 @@ export default {
   async mounted() {
     await this.loadCurrentUserInfo();
     await this.loadCurrentTeam();
-    await this.loadEnemies();
   },
   methods: {
     async loadCurrentUserInfo() {
@@ -81,15 +80,36 @@ export default {
     },
     async loadCurrentTeam() {
       try {
-        const response = await fetch(`http://localhost:8000/teams/${this.currentUserInfo.id}`);
+        const response = await fetch(`http://localhost:8000/teams/${this.authStore.userId}`);
         this.currentTeam = await response.json();
       } catch (error) {
         console.error('Error loading current team data:', error);
       }
     },
 
-    async loadEnemies() {
-      // Implement the logic to load enemy data based on your requirements
+    async loadStageFight() {
+      try {
+        const stageFightId = this.$route.params.stageFightId;
+        const response = await fetch(`http://localhost:8000/stage-fights/${stageFightId}`);
+        this.stageFight = await response.json();
+      } catch (error) {
+        console.error('Error loading stage fight data:', error);
+      }
+    },
+  },
+  computed: {
+    flattenedCurrentTeam() {
+      const flattenedTeam = [];
+      for (let i = 1; i <= 5; i++) {
+        const cardKey = `card${i}`;
+        if (this.currentTeam[cardKey]) {
+          flattenedTeam.push({
+            ...this.currentTeam[cardKey],
+            id: this.currentTeam[`${cardKey}_id`],
+          });
+        }
+      }
+      return flattenedTeam;
     },
   },
 };
