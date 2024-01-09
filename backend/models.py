@@ -35,6 +35,7 @@ class User(Base):
     summon_stone = Column(Integer, nullable=False, default=0)
     coin = Column(Integer, nullable=False, default=0)
     equipment_stone = Column(Integer, nullable=False, default=0)
+    currentStage = Column(Integer, nullable=True)
     
     account_equipment = relationship("AccountEquipment", back_populates="user")
     teams = relationship("Team", back_populates="user")
@@ -89,5 +90,41 @@ class Team(Base):
     card3_id = Column(Integer, ForeignKey("cards.id"))
     card4_id = Column(Integer, ForeignKey("cards.id"))
     card5_id = Column(Integer, ForeignKey("cards.id"))
+    stage_id = Column(Integer)
 
     user = relationship("User", back_populates="teams")
+
+
+class StageFight(Base):
+    __tablename__ = "stage_fights"
+
+    id = Column(Integer, primary_key=True, index=True)
+    stage_id = Column(Integer)
+    fight_number = Column(Integer)
+    enemy1_id = Column(Integer, ForeignKey("enemies.id"))
+    enemy2_id = Column(Integer, ForeignKey("enemies.id"))
+    enemy3_id = Column(Integer, ForeignKey("enemies.id"))
+
+    enemy1 = relationship("Enemy", foreign_keys=[enemy1_id])
+    enemy2 = relationship("Enemy", foreign_keys=[enemy2_id])
+    enemy3 = relationship("Enemy", foreign_keys=[enemy3_id])
+
+class Enemy(Base):
+    __tablename__ = "enemies"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String)
+    image = Column(String)
+    attack = Column(Integer)
+    defense = Column(Integer)
+    speed = Column(Integer)
+
+    stage_fights1 = relationship("StageFight", foreign_keys=[StageFight.enemy1_id], overlaps="enemy1")
+    stage_fights2 = relationship("StageFight", foreign_keys=[StageFight.enemy2_id], overlaps="enemy2")
+    stage_fights3 = relationship("StageFight", foreign_keys=[StageFight.enemy3_id], overlaps="enemy3")
+
+class Stage(Base):
+    __tablename__ = "stages"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String)

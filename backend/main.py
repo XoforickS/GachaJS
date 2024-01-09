@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session, joinedload
 
 from database import SessionLocal, engine
-from models import Base, Card, User, AccountCard, UserCard, Equipment, AccountEquipment, Team
+from models import Base, Card, User, AccountCard, UserCard, Equipment, AccountEquipment, Team, StageFight, Enemy
 from pydantic import BaseModel
 from typing import Union, List
 from sqlalchemy import func, and_ 
@@ -40,6 +40,10 @@ class UpgradeCardStats(BaseModel):
     attack_upgrade: Union[int, None] = None
     defense_upgrade: Union[int, None] = None
     speed_upgrade: Union[int, None] = None
+
+
+class SetCurrentStageRequest(BaseModel):
+    stage_id: int
 
 @app.get("/")
 def read_root():
@@ -252,6 +256,18 @@ def update_user_equipment_stone(user_id: int, equipment_stone: int, db: Session 
 
     return {"message": "Equipment stone updated successfully"}
 
+@app.put("/users/set-current-stage/{user_id}")
+def set_current_stage(user_id: int, stage_id: int, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.id == user_id).first()
+
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    user.currentStage = stage_id
+    db.commit()
+
+    return {"message": "Current stage updated successfully"}
+
 @app.get("/user_cards/{user_id}/{card_id}")
 def get_user_card_stats(user_id: int, card_id: int, db: Session = Depends(get_db)):
     user_card = (
@@ -349,7 +365,21 @@ def get_all_teams(db: Session = Depends(get_db)):
 
 @app.get("/teams/{team_id}")
 def get_team(team_id: int, db: Session = Depends(get_db)):
-    team = db.query(Team).filter(Team.id == team_id).first()
+    team = (
+        db.query(Team)
+        .join(User)  # Join User relationship
+        .join(Card, aliased=True, from_joinpoint=True)  # Join Card relationship for each card
+        .filter(Team.id == team_id)
+        .options(
+            joinedload(Team.user),
+            joinedload(Team.card1),
+            joinedload(Team.card2),
+            joinedload(Team.card3),
+            joinedload(Team.card4),
+            joinedload(Team.card5),
+        )
+        .first()
+    )
 
     if team is None:
         raise HTTPException(status_code=404, detail="Team not found")
@@ -382,3 +412,42 @@ def add_team(user_id: int, card_ids: List[int], db: Session = Depends(get_db)):
     db.refresh(team)
 
     return team
+
+@app.get("/stage-fights/{stage_fight_id}")
+def get_stage_fight(stage_fight_id: int, db: Session = Depends(get_db)):
+    stage_fight = db.query(StageFight).filter(StageFight.id == stage_fight_id).first()
+
+    if stage_fight is None:
+        raise HTTPException(status_code=404, detail="Stage fight not found")
+
+    response_stage_fight = {
+        "id": stage_fight.id,
+        "stage_id": stage_fight.stage_id,
+        "fight_number": stage_fight.fight_number,
+        "enemy1": {
+            "id": stage_fight.enemy1.id,
+            "name": stage_fight.enemy1.name,
+            "image": stage_fight.enemy1.image,
+            "attack": stage_fight.enemy1.attack,
+            "defense": stage_fight.enemy1.defense,
+            "speed": stage_fight.enemy1.speed,
+        },
+        "enemy2": {
+            "id": stage_fight.enemy2.id,
+            "name": stage_fight.enemy2.name,
+            "image": stage_fight.enemy2.image,
+            "attack": stage_fight.enemy2.attack,
+            "defense": stage_fight.enemy2.defense,
+            "speed": stage_fight.enemy2.speed,
+        },
+        "enemy3": {
+            "id": stage_fight.enemy3.id,
+            "name": stage_fight.enemy3.name,
+            "image": stage_fight.enemy3.image,
+            "attack": stage_fight.enemy3.attack,
+            "defense": stage_fight.enemy3.defense,
+            "speed": stage_fight.enemy3.speed,
+        },
+    }
+
+    return response_stage_fight

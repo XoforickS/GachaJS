@@ -1,22 +1,51 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import HomeView from '../views/HomeView.vue';
+import SummonView from '../views/SummonView.vue'
 import CatalogueView from '../views/CatalogueView.vue';
 import LoginView from '../views/LoginView.vue';
 import CardDetailsView from '../views/CardDetailsView.vue';
-import FightView from '../views/FightView.vue';
+// import FightView from '../views/FightView.vue';
+import StageFightView from '../views/StageFightView.vue';
+import MapStage from '../views/MapStage.vue'
+import FightPage from '../views/FightPage.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
-      name: 'home',
-      component: HomeView
+      name: 'Home',
+      component: HomeView,
     },
     {
-      path: '/fight',
-      name: 'fight',
-      component: FightView
+      path: '/summon',
+      name: 'Summon',
+      component: SummonView,
+    },
+    // {
+    //   path: '/fight',
+    //   name: 'fight',
+    //   component: FightView
+    // },
+    {
+      path: '/map',
+      name: 'Map',
+      component: MapStage
+    },
+    {
+      path: '/map',
+      name: 'Map',
+      component: MapStage
+    },
+    {
+      path: '/fights',
+      name: 'Fight',
+      component: FightPage
+    },
+    {
+      path: '/prepare/:stageFightId',
+      name: 'prepare',
+      component: StageFightView
     },
     {
       path: '/catalogue',
