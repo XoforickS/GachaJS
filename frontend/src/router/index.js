@@ -38,7 +38,7 @@ const router = createRouter({
       component: MapStage
     },
     {
-      path: '/fights',
+      path: '/fights/:stageFightId',
       name: 'Fight',
       component: FightPage
     },

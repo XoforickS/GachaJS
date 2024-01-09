@@ -1,21 +1,34 @@
 <template>
-  <div>
-    <h1 class="text-2xl">Combat Stage 1-1</h1>
+  <div class="main-bg min-h-screen">
+    <h1 class="absolute top-1/2 transform -translate-y-1/2 left-5 text-3xl font-bold text-center text-white bg-black rounded-lg px-5 py-3 -mt-6">Combat Stage 1-1</h1>
+    <h1 class="absolute top-1/2 transform -translate-y-1/2 left-1/2 -translate-x-1/2 text-center -mt-6"><img src="../assets/img/attack_icon.webp" class="w-1/2 mx-auto" alt=""></h1>
 
-    <h2>Enemies</h2>
-    <!-- <ul class="flex justify-center">
-      <li v-for="enemy in stageFight" :key="enemy.id">
-        <div class="relative">
-          <img :src="enemy.image" alt="">
+    <div class="flex justify-center pt-5">
+      <div v-for="enemy in stageFight" :key="enemy.id" class="flex justify-center mt-2 bg-white bg-opacity-80 rounded-lg">
+        <div class="text-center px-4 py-2" v-if="enemy.attack !== undefined || enemy.defense !== undefined || enemy.speed !== undefined">
+          <div class="relative">
+            <img :src="enemy.image" alt="">
+            <img v-if="hit_marker" @click="attackEnemy(enemy.id, selectedCard)" src="../assets/img/hit.png" class="absolute w-1/2 left-1/2 transform -translate-x-1/2 top-12" alt="">
+          </div>
+          <div class="py-2 font-semibold text-lg">{{ enemy.name }}</div> 
+          <div class="h-5 group relative rounded-full w-full bg-neutral-500 mt-1">
+            <div class="h-5 rounded-full relative bg-red-500 transition-defense duration-1000" :style="{ width: `${getEnemyDefense(enemy.id)}%` }"></div>
+            <span class="absolute top-0 left-1/2 -translate-x-1/2 text-sm text-white">{{ getEnemyDefense(enemy.id) }}%</span>
+          </div>
+          <div>
+            {{ enemy.attack }} | {{ getEnemyDefense(enemy.id) }} | {{ enemy.speed }}
+          </div>
         </div>
-      </li>
-    </ul> -->
-    <h2>Your Team</h2>
-    <ul class="flex justify-center">
-      <li v-for="card in flattenedCurrentTeam" :key="card.id">
-        <div class="relative">
+      </div>
+    </div>
+
+    <ul class="absolute bottom-4 left-1/2 transform -translate-x-1/2 mx-auto flex justify-center w-7/12">
+      <li v-for="card in flattenedCurrentTeam" :key="card.id" class="bg-white bg-opacity-80 mx-4 rounded-lg">
+        <div class="relative text-center">
           <img :src="card.image" alt="">
-          <div>{{ card.name }} - {{ card.attack }} / {{ card.defense }} / {{ card.speed }}</div>
+          <div>{{ card.name }}</div>
+          <div>{{ card.attack }} / {{ card.defense }} / {{ card.speed }}</div>
+          <button class="bg-red-500 px-4 py-1 w-full rounded-b-lg mt-1" @click="hit_marker = !hit_marker, selectCard(card.id)">Attaquer avec</button>
         </div>
       </li>
     </ul>
@@ -57,6 +70,12 @@ export default {
       currentTeam: {},
       stageFight: [],
       currentUserInfo: [],
+      hit_marker: false,
+      selectedEnemy: null,
+      selectedCard: null,
+      enemy1Defense: 100,
+      enemy2Defense: 100,
+      enemy3Defense: 100,
     };
   },
   setup(){
@@ -66,6 +85,7 @@ export default {
   async mounted() {
     await this.loadCurrentUserInfo();
     await this.loadCurrentTeam();
+    await this.loadStageFight();
   },
   methods: {
     async loadCurrentUserInfo() {
@@ -96,6 +116,63 @@ export default {
         console.error('Error loading stage fight data:', error);
       }
     },
+
+    selectCard(card) {
+      this.selectedCard = card;
+    },
+
+    attackEnemy(enemy_id, card_id) {
+      console.log(card_id + ' à attaqué, enemie numéro ' + enemy_id);
+
+      let currentDefense;
+
+      switch (enemy_id) {
+        case 1:
+          currentDefense = this.enemy1Defense;
+          break;
+        case 2:
+          currentDefense = this.enemy2Defense;
+          break;
+        case 3:
+          currentDefense = this.enemy3Defense;
+          break;
+
+        default:
+          console.error('Invalid enemy_id:', enemy_id);
+          return;
+      }
+
+      currentDefense = Math.max(currentDefense - 50, 0);
+
+      switch (enemy_id) {
+        case 1:
+          this.enemy1Defense = currentDefense;
+          break;
+        case 2:
+          this.enemy2Defense = currentDefense;
+          break;
+        case 3:
+          this.enemy3Defense = currentDefense;
+          break;
+      }
+
+      this.hit_marker = false;
+    },
+    getEnemyDefense(enemyId) {
+      switch (enemyId) {
+        case 1:
+          return this.enemy1Defense;
+        case 2:
+          return this.enemy2Defense;
+        case 3:
+          return this.enemy3Defense;
+        // Add more cases for additional enemies if needed
+
+        default:
+          console.error('Invalid enemyId:', enemyId);
+          return 0; // or any default value
+      }
+    },
   },
   computed: {
     flattenedCurrentTeam() {
@@ -114,3 +191,18 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.main-bg{
+  background-image: url('../assets/img/board_fight.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+.transition-defense {
+  transition: width 1s ease;
+}
+
+.duration-1000 {
+  transition-duration: 2000ms;
+}
+</style>

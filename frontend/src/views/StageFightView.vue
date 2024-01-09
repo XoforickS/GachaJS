@@ -12,8 +12,12 @@
             </div>
           </div>
         </div>
-        <router-link to="/fights" class="col-start-2 flex justify-center"><button class="bg-blue-500 rounded-lg text-white px-4 py-2 mt-4">Lancer le combat!</button></router-link>
-        <!--remettre  @click="startFight" -->
+        
+        <router-link :to="currentPath" class="col-start-2 flex justify-center">
+          <button @click="startFight" class="bg-blue-500 rounded-lg text-white px-4 py-2 mt-4">
+            Lancer le combat!
+          </button>
+        </router-link>
       </div>
     </div>
     <ChooseTeam />
@@ -22,7 +26,6 @@
 
 <script>
 import ChooseTeam from '../components/ChooseTeam.vue';
-import { useRoute } from 'vue-router';
 import { useAuthStore } from '../stores/auth';
 
 class User {
@@ -95,5 +98,10 @@ export default {
       }
     },
   },
+  computed: {
+    currentPath() {
+      return `/fights/${this.$route.params.stageFightId}`;
+    }
+  }
 };
 </script>

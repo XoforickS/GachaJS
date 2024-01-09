@@ -8,7 +8,7 @@
       </ul>
     </div>
     <div class="col-span-9 w-full">
-      <h2 class="text-center text-3xl font-semibold mt-3">Votre équipe</h2>
+      <h2 class="text-center text-2xl font-bold mt-1" :class="{'text-orange-500': teamSaved == false, 'text-black': teamSaved == true}">Votre équipe</h2>
       <ul class="flex justify-center">
         <li v-for="card in userTeam" :key="card.id">
           <div class="relative">
@@ -20,8 +20,10 @@
           <img v-for="index in 5 - userTeam.length" :key="index" src="../assets/img/empty_card.png" alt="">
         </div>
       </ul>
+      <div class="flex justify-center">
+        <button @click="saveTeam" class="py-1 px-3 rounded-lg text-white" :class="{'bg-orange-500': teamSaved == false, 'bg-gray-900': teamSaved == true}" :disabled="this.userTeam.length < 5">Verrouiller l'équipe</button>
+      </div>
     </div>
-    <button @click="saveTeam">Sauvegarder</button>
   </div>
 </template>
 
@@ -60,6 +62,7 @@ export default {
       currentUserInfo: [],
       userTeam: [],
       selectedCardIndex: null,
+      teamSaved: false,
     };
   },
   setup(){
@@ -69,7 +72,6 @@ export default {
   async mounted() {      
     await this.loadCurrentUserInfo();
     await this.loadCardData();
-    // await this.loadCurrentTeam();
   },
   methods: {
     async loadCurrentUserInfo() {
@@ -94,18 +96,6 @@ export default {
         console.error('Error loading card data:', error);
       }
     },
-    // async loadCurrentTeam() {
-    //   try {
-    //     const response = await fetch(`http://localhost:8000/teams/${this.authStore.userId}`);
-    //     const currentTeam = await response.json();
-
-    //     this.userTeam = currentTeam.cards.map(
-    //       (card) => new Card(card.id, card.name, card.image, card.attack, card.defense, card.speed, card.percentage_drop)
-    //     );
-    //   } catch (error) {
-    //     console.error('Error loading current team data:', error);
-    //   }
-    // },
     addToTeam(card) {
       if (!card.selected) {
         card.selected = true;
@@ -138,6 +128,8 @@ export default {
 
         if (response.ok) {
           const responseData = await response.json();
+          this.teamSaved = true;
+          this.$emit('team-saved', this.teamSaved);
           console.log('Team saved:', responseData);
         } else {
           console.error('Failed to save team:', response.statusText);
