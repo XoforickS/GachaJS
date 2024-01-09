@@ -35,6 +35,7 @@ class User(Base):
     summon_stone = Column(Integer, nullable=False, default=0)
     coin = Column(Integer, nullable=False, default=0)
     equipment_stone = Column(Integer, nullable=False, default=0)
+    favorite_card = Column(Integer, nullable=True)
     currentStage = Column(Integer, nullable=True)
     
     account_equipment = relationship("AccountEquipment", back_populates="user")
