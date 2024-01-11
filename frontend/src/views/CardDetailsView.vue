@@ -30,7 +30,13 @@
                       Niveau +
                     </button>
                 </div>
-                <div>UR</div>
+                <div v-if="card.rarity + currentStats.level !== 0" class="w-16 h-16">
+                  <img v-if="(card.rarity + currentStats.level) == 1" src="../assets/img/cartes/logos/r.png" alt="">
+                  <img v-if="(card.rarity + currentStats.level) == 2" src="../assets/img/cartes/logos/sr.png" alt="">
+                  <img v-if="(card.rarity + currentStats.level) == 3" src="../assets/img/cartes/logos/ssr.png" alt="">
+                  <img v-if="(card.rarity + currentStats.level) == 4" src="../assets/img/cartes/logos/ur.png" alt="">
+                  <img v-if="(card.rarity + currentStats.level) == 5" src="../assets/img/cartes/logos/lr.png" alt="">
+                </div>
             </h2>
             <div class="mb-10 mt-4 text-lg">
                 Histoire, {{ card.name }} : <br><br><div class="text-sm">Maecenas elit diam, tincidunt sit amet ligula at, blandit aliquam arcu. In eu dui sit amet enim suscipit interdum. Maecenas in velit blandit, pellentesque urna eu, tempus dolor. Praesent venenatis orci at lobortis cursus. In eget ultricies magna. Curabitur molestie nibh sed nibh accumsan, vel rhoncus odio euismod. Maecenas scelerisque mollis purus vel egestas. Cras sit amet molestie risus. Vivamus congue vel justo ac aliquet. Donec porta, felis id ultrices porttitor, purus lacus lacinia ex, et tincidunt leo arcu fermentum est. Curabitur faucibus viverra lacus quis semper.</div>
@@ -129,6 +135,7 @@ export default {
         const responseData = await response.json();
         card.value = responseData;
         upgradeBarTransition.value = true;
+        console.log(card.value)
       } catch (error) {
         console.error('Error loading card details:', error);
       }
@@ -209,11 +216,13 @@ export default {
         if (newLevel === 1 && maxedStatsCount >= 1) {
           possibleLevelUp.value = true;
           newLevel++;
+          console.log(newLevel);
         }
 
         else if (newLevel === 2 && maxedStatsCount >= 2) {
           possibleLevelUp.value = true;
           newLevel++;
+          console.log(newLevel);
         }
 
         await fetch(`http://localhost:8000/user_cards/update-level/${authStore.userId}/${cardId.value}?level=${newLevel}`, {

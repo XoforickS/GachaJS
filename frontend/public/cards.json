@@ -1,5 +1,0 @@
-[
-  {"name": "Card1", "image": "https://assets.pokemon.com/assets/cms2/img/cards/web/XYA/XYA_EN_28a.png", "stats": {"attack": 50, "defense": 30, "speed": 70}},
-  {"name": "Card2", "image": "https://assets.pokemon.com/assets/cms2/img/cards/web/XYA/XYA_EN_55a.png", "stats": {"attack": 40, "defense": 35, "speed": 60}},
-  {"name": "Card3", "image": "https://assets.pokemon.com/assets/cms2/img/cards/web/XYP/XYP_EN_XY42.png", "stats": {"attack": 60, "defense": 25, "speed": 80}}
-]

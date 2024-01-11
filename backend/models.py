@@ -97,6 +97,7 @@ class Card(Base):
     defense = Column(Integer)
     speed = Column(Integer)
     percentage_drop = Column(Float)
+    rarity = Column(Integer)
     
     account_card = relationship("AccountCard", back_populates="card")
     user_card = relationship("UserCard", back_populates="cardUser")
