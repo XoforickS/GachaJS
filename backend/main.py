@@ -154,6 +154,7 @@ def get_user_card_upgrades(user_id: int, db: Session = Depends(get_db)):
         "attack_upgrade": upgrade.attack_upgrade,
         "defense_upgrade": upgrade.defense_upgrade,
         "speed_upgrade": upgrade.speed_upgrade,
+        "levelUpgrade": upgrade.level,
     } for upgrade in upgrades]
     
 @app.get("/account_cards/counts/{user_id}")

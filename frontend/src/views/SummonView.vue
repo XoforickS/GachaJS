@@ -265,7 +265,7 @@ export default {
         }
       }
 
-      if (selectedCard && selectedCard.percentage_drop < 15) {
+      if (selectedCard && selectedCard.percentage_drop <= 1) {
         await this.showExplosionAnimation();
       }
 
@@ -683,7 +683,7 @@ div {
 }
 
 .main-bg{
-  background-image: url('../assets/img/background_ia.png');
+  background-image: url('../assets/img/summon/background.png');
   background-size: cover;
   background-repeat: no-repeat;
 }
