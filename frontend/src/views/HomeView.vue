@@ -16,6 +16,9 @@
         </RouterLink>
       </div>
     </div>
+    <audio autoplay loop>
+      <source src="../assets/music/home.mp3" type="audio/mp3">
+    </audio>
   </div>
   
 </template>
@@ -63,7 +66,6 @@
     },
     async mounted() {
       await this.loadCurrentUserInfo();
-      console.log(this.currentUserInfo);
 
     },
     methods: {
@@ -84,7 +86,6 @@
           const responseData = await response.json();
 
           this.currentFavCardInfo = new Card(responseData.id, responseData.name, responseData.image, responseData.attack, responseData.defense, responseData.speed, responseData.percentage_drop);
-          console.log(this.currentFavCardInfo);
         } catch (error) {
           console.error('Error loading card data:', error);
         }
