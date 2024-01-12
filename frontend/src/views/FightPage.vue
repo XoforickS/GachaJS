@@ -1,15 +1,15 @@
 <template>
-  <div class="main-bg min-h-screen">
-    <h1 class="absolute top-1/2 transform -translate-y-1/2 left-5 text-3xl font-bold text-center text-white bg-black rounded-lg px-5 py-3 -mt-6">Combat Stage 1-1</h1>
+  <div class="min-h-screen" :class="{'main-bg': this.stageFight.stage_id == 1, 'bg-ruin': this.stageFight.stage_id == 2, 'bg-montagne': this.stageFight.stage_id == 3, 'bg-desert': this.stageFight.stage_id == 4, 'bg-port': this.stageFight.stage_id == 5}">
+    <h1 class="absolute top-1/2 transform -translate-y-1/2 left-5 text-3xl font-bold text-center text-white bg-black rounded-lg px-5 py-3 -mt-6">Combat Stage {{ this.stageFight.stage_id }} - {{ this.stageFight.fight_number }}</h1>
     <h1 class="absolute top-1/2 transform -translate-y-1/2 left-1/2 -translate-x-1/2 text-center -mt-6 font-semibold">
       <img src="../assets/img/attack_icon.webp" class="w-1/3 mx-auto -mt-8" alt="">
       <div v-if="isPlayerTurn">Votre Tour !</div><div v-if="!isPlayerTurn">Au tour de l'ennemie</div>
     </h1>
 
-    <div class="flex justify-center pt-5">
+    <div class="flex justify-center pt-5 w-1/2 mx-auto">
       <div v-for="(enemy, index) in stageFight" :key="enemy.id" class="flex justify-center mt-2 bg-white bg-opacity-80 rounded-lg" :class="{ 'attack-animation-enemy': enemyAttack == enemy.id }">
         <div :class="{'dead-card': getEnemyDefense(index, enemy.defense, 1) === 0}" class="text-center px-4 py-2 w-2/3 mx-auto" v-if="enemy.attack !== undefined || enemy.defense !== undefined || enemy.speed !== undefined">
-          <div class="relative w-1/3 mx-auto">
+          <div class="relative">
             <img :src="enemy.image" alt="">
             <img v-if="hit_marker && getEnemyDefense(index, enemy.defense, 1) !== 0 " @click="attackEnemy(index, selectedCard, realSelectedId, enemy.attack)" src="../assets/img/hit.png" class="absolute w-1/2 left-1/2 transform -translate-x-1/2 top-12" alt="">
           </div>
@@ -58,14 +58,27 @@
     <audio v-if="enemy1Defense === 0 && enemy2Defense === 0 && enemy3Defense === 0" autoplay>
       <source src="../assets/music/victory.mp3" type="audio/mp3">
     </audio>
-    <audio v-if="enemy1Defense !== 0 && enemy2Defense !== 0 && enemy3Defense !== 0" autoplay loop>
-      <source src="../assets/music/city.mp3" type="audio/mp3">
-    </audio>
+    <div v-if="enemy1Defense !== 0 && enemy2Defense !== 0 && enemy3Defense !== 0">
+      <audio v-if="this.stageFight.stage_id == 1" autoplay loop>
+        <source src="../assets/music/city.mp3" type="audio/mp3">
+      </audio>
+      <audio v-if="this.stageFight.stage_id == 2" autoplay loop>
+        <source src="../assets/music/ruins.mp3" type="audio/mp3">
+      </audio>
+      <audio v-if="this.stageFight.stage_id == 3" autoplay loop>
+        <source src="../assets/music/viking.mp3" type="audio/mp3">
+      </audio>
+      <audio v-if="this.stageFight.stage_id == 4" autoplay loop>
+        <source src="../assets/music/desert.mp3" type="audio/mp3">
+      </audio>
+      <audio v-if="this.stageFight.stage_id == 5" autoplay loop>
+        <source src="../assets/music/pirate.mp3" type="audio/mp3">
+      </audio>
+    </div>
   </div>
 </template>
 
 <script>
-import { useRoute } from 'vue-router';
 import { useAuthStore } from '../stores/auth';
 
 class User {
@@ -432,6 +445,26 @@ export default {
 <style scoped>
 .main-bg{
   background-image: url('../assets/img/fight/city.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+.bg-ruin{
+  background-image: url('../assets/img/fight/ruins.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+.bg-montagne{
+  background-image: url('../assets/img/fight/vicking-bg.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+.bg-desert{
+  background-image: url('../assets/img/fight/desert.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+.bg-port{
+  background-image: url('../assets/img/fight/pirate-bg1.png');
   background-size: cover;
   background-repeat: no-repeat;
 }

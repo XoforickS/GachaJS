@@ -179,14 +179,14 @@ class Equipment {
       <div class="absolute top-5 right-8 flex">
         <div class="bg-gray-200 bg-opacity-30 rounded-full px-4 py-2 flex justify-center">
           <RouterLink to="/" class="pr-3">
+            <img src="../assets/svg/home.svg" class="w-8 h-8 mx-auto" alt="">
+          </RouterLink>
+          <RouterLink to="/" class="pr-3">
             <img src="../assets/img/summon-icon.png" class="w-8 h-8 mx-auto" alt="">
           </RouterLink>
           <RouterLink to="/catalogue" class="pr-3">
             <img src="../assets/svg/collection.svg" class="w-7 h-7 mx-auto" alt="">
           </RouterLink>
-          <button class="pr-3 -mt-1">
-            <img src="../assets/svg/harvest.svg" class="w-7 h-7 mx-auto" alt="">
-          </button>
           <RouterLink to="/login" class="pr-3">
             <img src="../assets/svg/settings.svg" class="w-7 h-7 mx-auto" alt="">
           </RouterLink>
