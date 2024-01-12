@@ -1,6 +1,6 @@
 # gacha
 
-Ce ReadME vas t'aider chelsea a one shot le backend
+Comment start le backend
 
 ## Installation des pré-requis (PAS REFAIRE A CHAQUE LANCEMENT)
 
@@ -25,3 +25,4 @@ pip install mysql-connector-python
 ```sh
 uvicorn main:app --reload
 ```
+Ajouter --reload pour re-actualiser quand on save  
