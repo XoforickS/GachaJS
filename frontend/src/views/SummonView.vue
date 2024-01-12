@@ -125,6 +125,12 @@
         </div>
       </div>
     </div>
+    <audio autoplay loop>
+      <source src="../assets/music/summonMain.mp3" type="audio/mp3">
+    </audio>
+    <audio autoplay loop>
+      <source src="../assets/music/summonMain.mp3" type="audio/mp3">
+    </audio>
   </div>
 </template>
 
