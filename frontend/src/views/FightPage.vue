@@ -58,7 +58,10 @@
     </div>
   </div>
 
-  <audio autoplay loop>
+  <audio v-if="enemy1Defense === 0 && enemy2Defense === 0 && enemy3Defense === 0" autoplay>
+    <source src="../assets/music/victory.mp3" type="audio/mp3">
+  </audio>
+  <audio v-if="enemy1Defense !== 0 && enemy2Defense !== 0 && enemy3Defense !== 0" autoplay loop>
     <source src="../assets/music/city.mp3" type="audio/mp3">
   </audio>
 
