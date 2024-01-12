@@ -8,11 +8,10 @@
 
     <div class="flex justify-center pt-5">
       <div v-for="(enemy, index) in stageFight" :key="enemy.id" class="flex justify-center mt-2 bg-white bg-opacity-80 rounded-lg" :class="{ 'attack-animation-enemy': enemyAttack == enemy.id }">
-        <div :class="{'dead-card': getEnemyDefense(index, enemy.defense, 1) === 0}" class="text-center px-4 py-2" v-if="enemy.attack !== undefined || enemy.defense !== undefined || enemy.speed !== undefined">
-          <div class="relative">
+        <div :class="{'dead-card': getEnemyDefense(index, enemy.defense, 1) === 0}" class="text-center px-4 py-2 w-2/3 mx-auto" v-if="enemy.attack !== undefined || enemy.defense !== undefined || enemy.speed !== undefined">
+          <div class="relative w-1/3 mx-auto">
             <img :src="enemy.image" alt="">
             <img v-if="hit_marker && getEnemyDefense(index, enemy.defense, 1) !== 0 " @click="attackEnemy(index, selectedCard, realSelectedId, enemy.attack)" src="../assets/img/hit.png" class="absolute w-1/2 left-1/2 transform -translate-x-1/2 top-12" alt="">
-
           </div>
           <div class="py-2 font-semibold text-lg">{{ enemy.name }}</div> 
           <div class="h-5 group relative rounded-full w-full bg-neutral-500 mt-1">
@@ -56,15 +55,13 @@
         <router-link :to="dynamicRoute" class="bg-green-500 px-4 py-2 rounded-lg">Niveau suivant !</router-link>
       </div>
     </div>
+    <audio v-if="enemy1Defense === 0 && enemy2Defense === 0 && enemy3Defense === 0" autoplay>
+      <source src="../assets/music/victory.mp3" type="audio/mp3">
+    </audio>
+    <audio v-if="enemy1Defense !== 0 && enemy2Defense !== 0 && enemy3Defense !== 0" autoplay loop>
+      <source src="../assets/music/city.mp3" type="audio/mp3">
+    </audio>
   </div>
-
-  <audio v-if="enemy1Defense === 0 && enemy2Defense === 0 && enemy3Defense === 0" autoplay>
-    <source src="../assets/music/victory.mp3" type="audio/mp3">
-  </audio>
-  <audio v-if="enemy1Defense !== 0 && enemy2Defense !== 0 && enemy3Defense !== 0" autoplay loop>
-    <source src="../assets/music/city.mp3" type="audio/mp3">
-  </audio>
-
 </template>
 
 <script>

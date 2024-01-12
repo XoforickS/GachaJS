@@ -27,6 +27,7 @@
           <label for="password" class="shadow-log text-md flex justify-center mb-1">Mot de passe</label>
           <input autocomplete="off" id="password" name="password" type="password" v-model="loginPassword" class="h-10 w-full rounded-lg bg-[#312824] bg-opacity-80 px-2 border-2 border-[#74625c] text-white focus:outline-none" />
         </div>
+        <RouterLink class="text-black" to="/register">Pas de compte ? S'enregistrer ici !</RouterLink>
       </div>
       <div class="mt-32">
         <button type="submit" @click="startAnimationScale()" :class="{ 'transition scale-95 duration-200': scaleAnim, 'transition scale-100 duration-200': !scaleAnim}" class="bg-[#630e03] text-[#bda747] w-full rounded-lg border-2 border-[#40342f] px-2 py-1 scale-100">Connexion</button>
@@ -69,7 +70,7 @@ export default {
 </script>
 
 
-<style scoped>
+<style>
 .login-bg{
   background-image: url('../assets/img/background-login.jpg');
   background-size: cover;

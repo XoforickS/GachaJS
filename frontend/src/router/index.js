@@ -3,8 +3,8 @@ import HomeView from '../views/HomeView.vue';
 import SummonView from '../views/SummonView.vue'
 import CatalogueView from '../views/CatalogueView.vue';
 import LoginView from '../views/LoginView.vue';
+import RegisterView from '../views/RegisterView.vue';
 import CardDetailsView from '../views/CardDetailsView.vue';
-// import FightView from '../views/FightView.vue';
 import StageFightView from '../views/StageFightView.vue';
 import MapStage from '../views/MapStage.vue'
 import FightPage from '../views/FightPage.vue'
@@ -22,11 +22,6 @@ const router = createRouter({
       name: 'Summon',
       component: SummonView,
     },
-    // {
-    //   path: '/fight',
-    //   name: 'fight',
-    //   component: FightView
-    // },
     {
       path: '/map',
       name: 'Map',
@@ -56,6 +51,11 @@ const router = createRouter({
       path: '/login',
       name: 'Login',
       component: LoginView,
+    },
+    {
+      path: '/register',
+      name: 'Register',
+      component: RegisterView,
     },
     { 
       path: '/card/:cardId', 
