@@ -120,25 +120,25 @@ export default {
 
       try {
         const response = await fetch(`http://localhost:8000/teams/add?user_id=${this.currentUserInfo.id}`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(cardIds),
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(cardIds),
         });
 
         if (response.ok) {
-          const responseData = await response.json();
-          this.teamSaved = true;
-          this.$emit('team-saved', this.teamSaved);
-          console.log('Team saved:', responseData);
+            const responseData = await response.json();
+            this.teamSaved = true;
+            this.$emit('team-saved', this.teamSaved);
+            console.log('Team saved:', responseData);
         } else {
-          console.error('Failed to save team:', response.statusText);
+            console.error('Failed to save team:', response.statusText);
         }
       } catch (error) {
         console.error('Error saving team:', error);
       }
-    },
+    }
   },
 };
 </script>

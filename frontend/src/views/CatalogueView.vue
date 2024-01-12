@@ -181,7 +181,7 @@ class Equipment {
           <RouterLink to="/" class="pr-3">
             <img src="../assets/svg/home.svg" class="w-8 h-8 mx-auto" alt="">
           </RouterLink>
-          <RouterLink to="/" class="pr-3">
+          <RouterLink to="/summon" class="pr-3">
             <img src="../assets/img/summon-icon.png" class="w-8 h-8 mx-auto" alt="">
           </RouterLink>
           <RouterLink to="/catalogue" class="pr-3">

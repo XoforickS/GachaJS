@@ -1,17 +1,19 @@
 <template>
-  <div>
-    <div class="bg-gray-200" style="min-height: 50vh; max-height: 50vh;">
+  <div :class="{'main-bg': this.stageFight.stage_id == 1, 'bg-ruin': this.stageFight.stage_id == 2, 'bg-montagne': this.stageFight.stage_id == 3, 'bg-desert': this.stageFight.stage_id == 4, 'bg-port': this.stageFight.stage_id == 5}">
+    <div style="min-height: 50vh; max-height: 50vh;">
       <RouterLink to="/map" class="px-4 py-2 text-white rounded-lg bg-black absolute top-2 left-2">
           Retour en arrière
       </Routerlink>
       <div class="text-center py-4 text-3xl font-semibold">Prévisualisation de l'ennemi</div>
       <div class="grid grid-cols-3">
         <div v-for="enemy in stageFight" :key="enemy.id" class="flex justify-center mt-2" >
-          <div class="text-center" v-if="enemy.attack !== undefined || enemy.defense !== undefined || enemy.speed !== undefined">
+          <div class="text-center text-white" v-if="enemy.attack !== undefined || enemy.defense !== undefined || enemy.speed !== undefined">
             <img :src="enemy.image" class="w-1/3 mx-auto" alt="">
-            <div class="py-2 font-semibold text-lg">{{ enemy.name }}</div> 
-            <div>
-              {{ enemy.attack }} | {{ enemy.defense }} | {{ enemy.speed }}
+            <div class="bg-black bg-opacity-80 rounded-b-xl w-1/3 mx-auto">
+              <div class="py-2 font-semibold text-lg">{{ enemy.name }}</div> 
+              <div class="pb-2">
+                {{ enemy.attack }} | {{ enemy.defense }} | {{ enemy.speed }}
+              </div>
             </div>
           </div>
         </div>
@@ -23,7 +25,7 @@
         </router-link>
       </div>
     </div>
-    <ChooseTeam />
+    <ChooseTeam class="bg-black bg-opacity-70" />
   </div>
 </template>
 
@@ -108,3 +110,32 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+
+.main-bg{
+  background-image: url('../assets/img/fight/city.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+.bg-ruin{
+  background-image: url('../assets/img/fight/ruins.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+.bg-montagne{
+  background-image: url('../assets/img/fight/vicking-bg.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+.bg-desert{
+  background-image: url('../assets/img/fight/desert.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+.bg-port{
+  background-image: url('../assets/img/fight/pirate-bg1.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+</style>
