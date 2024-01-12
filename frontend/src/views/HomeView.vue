@@ -1,8 +1,23 @@
 <template>
   <div class="catalogue-bg min-h-screen flex items-end w-full text-center">
     <div class="max-w-7xl mx-auto text-center pt-8 text-white pb-10">
+        
+      <div class="absolute top-5 right-5 flex items-center space-x-4 text-xl font-semibold tracking-tight text-white">
+        <div class="flex bg-gray-900 bg-opacity-40 rounded-full pr-3">
+          <img src="../assets/img/equipment_summon.png" class="w-8 h-8 mt-[2px]" />
+          <span class="ml-4 mt-1">{{ currentUserInfo.equipment_stone }}</span>
+        </div>
+        <div class="flex bg-gray-900 bg-opacity-40 rounded-full pr-3">
+          <img src="../assets/img/summon-stone.webp" class="w-8 h-8 mt-[2px]" />
+          <span class="ml-4 mt-1">{{ currentUserInfo.summon_stone }}</span>
+        </div>
+        <div class="flex bg-gray-900 bg-opacity-40 rounded-full pr-3">
+          <img src="../assets/img/coin.webp" class="w-8 h-8 mt-[2px]" />
+          <span class="ml-4 mt-1">{{ currentUserInfo.coin }}</span>
+        </div>
+      </div>
       <div class="absolute top-5 right-8 flex">
-        <RouterLink to="/catalogue" >
+        <RouterLink to="/login" >
           <button class="w-[6vw] h-[8vh] fixed top-[46%] right-[15%]"></button>
         </RouterLink>
         <RouterLink to="/summon" >
@@ -14,6 +29,16 @@
         <RouterLink to="/map" >
             <button class="w-[50vw] h-[13vh] fixed bottom-[0%] right-[22%]"></button>
         </RouterLink>
+      </div>
+      <div class="text-white bg-black bg-opacity-80 rounded-xl p-4 absolute w-1/5 text-2xl bottom-3 left-5">
+        <div class="text-left flex justify-between mb-1"><div><img src="" class="rounded-full" alt="">{{authStore.username}}</div><div>Nv: {{currentUserInfo.level}}</div></div>
+        <div class="flex space-x-2 mb-1">
+          <img src="../assets/svg/xp.svg" class="w-4 h-4 mt-2" alt="">
+          <div class="h-5 group relative rounded-full w-full bg-neutral-500 mt-1">
+            <div class="h-5 rounded-full relative bg-blue-600" :style="{ width: `${currentUserInfo.xp}%` }" :class="{ 'transition-xp': xpBarTransition, 'duration-1000': xpBarTransition }"></div>
+            <span class="hidden group-hover:block absolute top-1 left-1/2 -translate-x-1/2 text-xs">{{currentUserInfo.xp}}%</span>
+          </div>
+        </div>
       </div>
     </div>
     <audio autoplay loop>

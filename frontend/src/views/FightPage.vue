@@ -1,25 +1,26 @@
 <template>
   <div class="min-h-screen" :class="{'main-bg': this.stageFight.stage_id == 1, 'bg-ruin': this.stageFight.stage_id == 2, 'bg-montagne': this.stageFight.stage_id == 3, 'bg-desert': this.stageFight.stage_id == 4, 'bg-port': this.stageFight.stage_id == 5}">
+    <router-link :to="dynamicRouteExit" class="bg-black text-white px-4 py-2 rounded-lg absolute top-5 left-5">Retour a la préparation</router-link>
     <h1 class="absolute top-1/2 transform -translate-y-1/2 left-5 text-3xl font-bold text-center text-white bg-black rounded-lg px-5 py-3 -mt-6">Combat Stage {{ this.stageFight.stage_id }} - {{ this.stageFight.fight_number }}</h1>
     <h1 class="absolute top-1/2 transform -translate-y-1/2 left-1/2 -translate-x-1/2 text-center -mt-6 font-semibold">
       <img src="../assets/img/attack_icon.webp" class="w-1/3 mx-auto -mt-8" alt="">
       <div v-if="isPlayerTurn">Votre Tour !</div><div v-if="!isPlayerTurn">Au tour de l'ennemie</div>
     </h1>
 
-    <div class="flex justify-center pt-5 w-1/2 mx-auto">
-      <div v-for="(enemy, index) in stageFight" :key="enemy.id" class="flex justify-center mt-2 bg-white bg-opacity-80 rounded-lg" :class="{ 'attack-animation-enemy': enemyAttack == enemy.id }">
-        <div :class="{'dead-card': getEnemyDefense(index, enemy.defense, 1) === 0}" class="text-center px-4 py-2 w-2/3 mx-auto" v-if="enemy.attack !== undefined || enemy.defense !== undefined || enemy.speed !== undefined">
+    <div class="flex justify-center pt-5 w-2/5 mx-auto">
+      <div v-for="(enemy, index) in stageFight" :key="enemy.id" class="flex justify-center mt-2 mr-4 bg-white bg-opacity-80 rounded-lg" :class="{ 'attack-animation-enemy': enemyAttack == enemy.id }">
+        <div :class="{'dead-card': getEnemyDefense(index, enemy.defense, 1) === 0}" class="text-center px-4 py-2 mx-auto" v-if="enemy.attack !== undefined || enemy.defense !== undefined || enemy.speed !== undefined">
           <div class="relative">
             <img :src="enemy.image" alt="">
             <img v-if="hit_marker && getEnemyDefense(index, enemy.defense, 1) !== 0 " @click="attackEnemy(index, selectedCard, realSelectedId, enemy.attack)" src="../assets/img/hit.png" class="absolute w-1/2 left-1/2 transform -translate-x-1/2 top-12" alt="">
           </div>
-          <div class="py-2 font-semibold text-lg">{{ enemy.name }}</div> 
+          <div class="font-semibold text-lg">{{ enemy.name }}</div> 
+          <div class="py-2 text-lg">
+            {{ enemy.attack }} | {{ enemy.defense }} | {{ enemy.speed }}
+          </div>
           <div class="h-5 group relative rounded-full w-full bg-neutral-500 mt-1">
             <div class="h-5 rounded-full relative bg-red-500 transition-defense duration-1000" :style="{ width: `${getEnemyDefense(index, enemy.defense, 0)}%` }"></div>
             <span class="absolute top-0 left-1/2 -translate-x-1/2 text-sm text-white">{{ getEnemyDefense(index, enemy.defense, 1) }} / {{ enemy.defense }}</span>
-          </div>
-          <div>
-            {{ enemy.attack }} | {{ enemy.defense }} | {{ enemy.speed }}
           </div>
         </div>
       </div>
@@ -116,6 +117,7 @@ export default {
       selectedEnemy: null,
       selectedCard: null,
       realSelectedId: null,
+      currentRoute: null,
       selectedAttackedCard: null,
       cardAttacked: null,
       enemyAttack: null,
@@ -169,6 +171,7 @@ export default {
     async loadStageFight() {
       try {
         const stageFightId = this.$route.params.stageFightId;
+        this.currentRoute = this.$route.params.stageFightId;
         const response = await fetch(`http://localhost:8000/stage-fights/${stageFightId}`);
         this.stageFight = await response.json();
         this.enemy1Defense = this.stageFight.enemy1.defense
@@ -436,7 +439,11 @@ export default {
     },
     
     dynamicRoute() {
-      return `/prepare/${this.stageFight.fight_number + 1}`;
+      return `/prepare/${parseInt(this.currentRoute) + 1}`;
+    },
+
+    dynamicRouteExit() {
+      return `/prepare/${parseInt(this.currentRoute)}`;
     }
   },
 };

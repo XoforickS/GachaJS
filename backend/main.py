@@ -392,21 +392,29 @@ def add_team(user_id: int, card_ids: List[int], db: Session = Depends(get_db)):
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
 
-    for card_id in card_ids:
-        db_card = db.query(Card).filter(Card.id == card_id).first()
-        if db_card is None:
-            raise HTTPException(status_code=404, detail=f"Card with ID {card_id} not found")
+    # Check if the team already exists
+    team = db.query(Team).filter(Team.user_id == user_id).first()
 
-    team = Team(
-        user_id=user_id,
-        card1_id=card_ids[0],
-        card2_id=card_ids[1],
-        card3_id=card_ids[2],
-        card4_id=card_ids[3],
-        card5_id=card_ids[4]
-    )
+    if team:
+        # Update the existing team
+        team.card1_id = card_ids[0]
+        team.card2_id = card_ids[1]
+        team.card3_id = card_ids[2]
+        team.card4_id = card_ids[3]
+        team.card5_id = card_ids[4]
+    else:
+        # Create a new team
+        team = Team(
+            user_id=user_id,
+            card1_id=card_ids[0],
+            card2_id=card_ids[1],
+            card3_id=card_ids[2],
+            card4_id=card_ids[3],
+            card5_id=card_ids[4]
+        )
 
-    db.add(team)
+        db.add(team)
+
     db.commit()
     db.refresh(team)
 
