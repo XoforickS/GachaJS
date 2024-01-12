@@ -2,7 +2,7 @@
 <div class="detail-bg min-h-screen">
     <div class="grid grid-cols-2">
         <div class="text-center text-white flex justify-center items-center h-screen">
-            <img :src="card.image" :alt="card.name" class="h-screen w-full object-cover mb-2" />
+            <img :src="card.image_w_border" :alt="card.name" class="h-screen w-full object-cover" />
         </div>
         <div class="flex flex-col text-white bg-black bg-opacity-80 px-10 pb-10">
             <div class="flex space-x-4 justify-end my-4">
