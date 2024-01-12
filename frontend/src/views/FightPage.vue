@@ -12,6 +12,7 @@
           <div class="relative">
             <img :src="enemy.image" alt="">
             <img v-if="hit_marker && getEnemyDefense(index, enemy.defense, 1) !== 0 " @click="attackEnemy(index, selectedCard, realSelectedId, enemy.attack)" src="../assets/img/hit.png" class="absolute w-1/2 left-1/2 transform -translate-x-1/2 top-12" alt="">
+
           </div>
           <div class="py-2 font-semibold text-lg">{{ enemy.name }}</div> 
           <div class="h-5 group relative rounded-full w-full bg-neutral-500 mt-1">
@@ -26,18 +27,22 @@
     </div>
 
     <ul class="absolute bottom-4 left-1/2 transform -translate-x-1/2 mx-auto flex justify-center w-7/12">
-      <li v-for="(card, index) in flattenedCurrentTeam" :key="card.id" class="bg-white bg-opacity-80 mx-4 rounded-lg" :class="{ 'attack-animation': cardAttacked == index + 1, 'ouch-animation': alliedAttacked == index + 1 }">
-        <div :class="{'dead-card': getCardDefense(index + 1, card.defense, 1) === 0}" class="relative text-center">
-          <img :src="card.image" alt="">
-          <div>{{ card.name }}</div>
-          <div>{{ card.attack }} / {{ card.defense }} / {{ card.speed }}</div>
-          <div class="h-8 group relative rounded-full w-full bg-neutral-500 mt-1">
-            <div class="h-8 rounded-full relative bg-blue-500 transition-defense duration-1000" :style="{ width: `${getCardDefense(index + 1, card.defense, 0)}%` }"></div>
-            <span class="absolute top-0 left-1/2 -translate-x-1/2 text-lg text-white">{{ getCardDefense(index + 1, card.defense, 1) }} / {{ card.defense }}</span>
+      <div v-for="(card, index) in flattenedCurrentTeam" :key="card.id" class="mx-4 ">
+        <li class="bg-white bg-opacity-80 rounded-lg" :class="{ 'attack-animation': cardAttacked == index + 1, 'ouch-animation': alliedAttacked == index + 1 }">
+          <div :class="{'dead-card': getCardDefense(index + 1, card.defense, 1) === 0}" class="relative text-center">
+            <img :src="card.image" alt="">
+            <div class="py-2 font-semibold">
+              <div class="text-lg">{{ card.name }}</div>
+              <div class="text-xl">{{ card.attack }} / {{ card.defense }} / {{ card.speed }}</div>
+            </div>
+            <button v-if="isPlayerTurn && getCardDefense(index + 1, card.defense, 1) !== 0" class="w-1/3 absolute -top-5 -right-5" @click="hit_marker = !hit_marker, selectCard(index + 1, card.id)"><img src="../assets/img/attack_icon.png" alt=""></button>
           </div>
-          <button v-if="isPlayerTurn && getCardDefense(index + 1, card.defense, 1) !== 0" class="w-1/3 absolute -top-5 -right-5" @click="hit_marker = !hit_marker, selectCard(index + 1, card.id)"><img src="../assets/img/attack_icon.png" alt=""></button>
+        </li>
+        <div class="h-8 group relative rounded-full w-full bg-neutral-500 mt-1">
+          <div class="h-8 rounded-full relative bg-green-500 transition-defense duration-1000" :style="{ width: `${getCardDefense(index + 1, card.defense, 0)}%` }"></div>
+          <span class="absolute top-0 left-1/2 -translate-x-1/2 text-lg text-white">{{ getCardDefense(index + 1, card.defense, 1) }} / {{ card.defense }}</span>
         </div>
-      </li>
+      </div>
     </ul>
     <div v-if="enemy1Defense === 0 && enemy2Defense === 0 && enemy3Defense === 0" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-xl font-semibold bg-white rounded-xl shadow-md z-40">
       <span class="text-2xl font-semibold bg-green-300 p-6 rounded-t-xl">Bien joué ! Tu as complété le Stage {{ this.stageFight.stage_id }} - {{ this.stageFight.fight_number }}</span>
@@ -173,8 +178,8 @@ export default {
 
     randomEnemyCard() {    
       const randomEnemyId = Math.floor(Math.random() * 3) + 1;
-      this.selectedAttackedCard = this.getRandomAliveCard();
-      this.selectEnemy(randomEnemyId, this.selectedAttackedCard);
+      const randomCardId = Math.floor(Math.random() * 5) + 1;
+      this.selectEnemy(randomEnemyId, randomCardId);
     },
     
     selectEnemy(enemy, card_team) {
@@ -182,22 +187,20 @@ export default {
       this.selectedAttackedCard = card_team
     },
 
-    getRandomAliveCard() {
-      const aliveCards = this.flattenedCurrentTeam.filter(card => card.defense > 0);
-      if (aliveCards.length === 0) {
-        return null;
-      }
+    // getRandomAliveCard() {
+    //   const aliveCards = this.flattenedCurrentTeam.filter(card => card.defense > 0);
+    //   if (aliveCards.length === 0) {
+    //     return null;
+    //   }
 
-      const randomIndex = Math.floor(Math.random() * aliveCards.length);
-      return aliveCards[randomIndex].id;
-    },
+    //   const randomIndex = Math.floor(Math.random() * aliveCards.length);
+    //   return aliveCards[randomIndex].id;
+    // },
 
     enemyTurn(DamageNumber) {
       this.randomEnemyCard();
       
-      if (this.selectedAttackedCard !== null) {
-        this.attackCard(this.selectedEnemy, this.selectedAttackedCard, DamageNumber);
-      }
+      this.attackCard(this.selectedEnemy, this.selectedAttackedCard, DamageNumber);
 
       this.startPlayerTurn();
     },
@@ -231,7 +234,7 @@ export default {
           break;
 
         default:
-          console.error('Invalid enemy_id:', enemy_id);
+          console.error('Invalid enemy_id:', card_id);
           return;
       }
       const damage = Math.max(DamageNumber, 0);

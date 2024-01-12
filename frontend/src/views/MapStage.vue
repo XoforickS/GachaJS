@@ -13,7 +13,7 @@
         </div>
       <router-link to="/prepare/3" class="custom-1-3" :class="{ 'bg-gray-500  bg-opacity-70': currentUserInfo.currentStage < 3 }" :disabled="currentUserInfo.currentStage < 3"></router-link>
         <div class="absolute z-20 fixed top-[24%] left-[12%] zone">
-          De  sert
+          <span>Desert</span><span></span>
         </div>
       <router-link to="/prepare/4" class="custom-1-4" :class="{ 'bg-gray-500 bg-opacity-70': currentUserInfo.currentStage < 4 }" :disabled="currentUserInfo.currentStage < 4"></router-link>
         <div class="absolute z-20 fixed top-[66%] left-[17%] zone">

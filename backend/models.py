@@ -93,6 +93,7 @@ class Card(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String)
     image = Column(String)
+    image_w_border = Column(String)
     attack = Column(Integer)
     defense = Column(Integer)
     speed = Column(Integer)

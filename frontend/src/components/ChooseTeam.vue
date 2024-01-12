@@ -31,7 +31,7 @@
 import { useAuthStore } from '../stores/auth';
 
 class Card {
-  constructor(id, name, image, attack, defense, speed, percentage_drop) {
+  constructor(id, name, image, attack, defense, speed, percentage_drop, rarity) {
     this.id = id;
     this.name = name;
     this.image = image;
@@ -39,6 +39,7 @@ class Card {
     this.defense = defense;
     this.speed = speed;
     this.percentage_drop = percentage_drop;
+    this.rarity = rarity
   }
 }
 
