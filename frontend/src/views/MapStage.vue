@@ -1,26 +1,29 @@
 <template>
   <div class="items-center text-center h-screen custom-bg">
-        <div class="absolute z-20 fixed top-[40%] right-[44%] zone">
-          Ville
-        </div>
-      <router-link to="/prepare/1" class="relative custom-1-1" :class="{ 'bg-gray-500 bg-opacity-70': currentUserInfo.currentStage < 1 }" :disabled="currentUserInfo.currentStage < 1"></router-link>
-        <div class="absolute z-20 fixed top-[65%] left-[68%] zone">
-          Ruines
-        </div>
-      <router-link to="/prepare/2" class="relative custom-1-2" :class="{ 'bg-gray-500 bg-opacity-70': currentUserInfo.currentStage < 2 }" :disabled="currentUserInfo.currentStage < 2"></router-link>
-        <div class="absolute z-20 fixed top-[23%] left-[65%] zone">
-          Montagne
-        </div>
-      <router-link to="/prepare/3" class="custom-1-3" :class="{ 'bg-gray-500  bg-opacity-70': currentUserInfo.currentStage < 3 }" :disabled="currentUserInfo.currentStage < 3"></router-link>
-        <div class="absolute z-20 fixed top-[24%] left-[12%] zone">
-          <span>Desert</span><span></span>
-        </div>
-      <router-link to="/prepare/4" class="custom-1-4" :class="{ 'bg-gray-500 bg-opacity-70': currentUserInfo.currentStage < 4 }" :disabled="currentUserInfo.currentStage < 4"></router-link>
-        <div class="absolute z-20 fixed top-[66%] left-[17%] zone">
-          Port
-        </div>
-      <router-link to="/prepare/5" class="custom-1-5" :class="{ 'bg-gray-500 bg-opacity-70': currentUserInfo.currentStage < 5 }" :disabled="currentUserInfo.currentStage < 5">
-      </router-link>
+    <RouterLink to="/" class="px-4 py-2 text-white rounded-lg bg-black absolute top-10 left-10">
+        Retour en arrière
+    </Routerlink>
+    <div class="absolute z-20 fixed top-[40%] right-[44%] zone">
+      Ville
+    </div>
+    <router-link to="/prepare/1" class="relative custom-1-1" :class="{ 'bg-gray-500 bg-opacity-70': currentUserInfo.currentStage < 1 }" :disabled="currentUserInfo.currentStage < 1"></router-link>
+      <div class="absolute z-20 fixed top-[65%] left-[68%] zone">
+        Ruines
+      </div>
+    <router-link to="/prepare/2" class="relative custom-1-2" :class="{ 'bg-gray-500 bg-opacity-70': currentUserInfo.currentStage < 2 }" :disabled="currentUserInfo.currentStage < 2"></router-link>
+      <div class="absolute z-20 fixed top-[23%] left-[65%] zone">
+        Montagne
+      </div>
+    <router-link to="/prepare/3" class="custom-1-3" :class="{ 'bg-gray-500  bg-opacity-70': currentUserInfo.currentStage < 3 }" :disabled="currentUserInfo.currentStage < 3"></router-link>
+      <div class="absolute z-20 fixed top-[24%] left-[12%] zone">
+        <span>Desert</span><span></span>
+      </div>
+    <router-link to="/prepare/4" class="custom-1-4" :class="{ 'bg-gray-500 bg-opacity-70': currentUserInfo.currentStage < 4 }" :disabled="currentUserInfo.currentStage < 4"></router-link>
+      <div class="absolute z-20 fixed top-[66%] left-[17%] zone">
+        Port
+      </div>
+    <router-link to="/prepare/5" class="custom-1-5" :class="{ 'bg-gray-500 bg-opacity-70': currentUserInfo.currentStage < 5 }" :disabled="currentUserInfo.currentStage < 5">
+    </router-link>
   </div>
 </template>
 
@@ -168,12 +171,12 @@ export default {
 }
 
 @font-face {
-  font-family: myFirstFont;
+  font-family: myFontMap;
   src: url(../assets/font/ACMountain.otf);
 }
 
 .zone {
-  font-family: myFirstFont;
+  font-family: myFontMap;
   color: rgb(255, 255, 255);
   font-size: 75px;
 }

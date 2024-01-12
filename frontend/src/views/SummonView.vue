@@ -43,10 +43,9 @@
               </button>
               <div v-if="dropdownSettings == true" class="absolute right-0 z-10 mt-4 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
                 <div class="py-1" role="none">
-                  <RouterLink to="/login" class="text-gray-700 block px-4 py-2 text-sm" role="menuitem" tabindex="-1" id="menu-item-0">Mon Profil</RouterLink>
-                  <button role="none" @click="logout">
+                  <router-link role="none" to="/login">
                     <span class="text-gray-700 block w-full px-4 py-2 text-left text-sm" role="menuitem" tabindex="-1" id="menu-item-3">Se déconnecter</span>
-                  </button>
+                  </router-link>
                 </div>
               </div>
             </div>
@@ -59,10 +58,10 @@
     </nav>
     <div class="max-w-7xl mx-auto text-center">
       <div class="absolute bottom-4 right-0 left-0 w-1/3 mx-auto grid grid-cols-2 font-semibold text-2xl justify-center gap-4">
-        <button v-if="!equipementChoosed" id="summonButton" class="bg-white hover:bg-gray-200 cursor-pointer pt-1 pl-6 pr-1 rounded-full transition ease-in-out flex justify-between" @click="startAnimation(1)" :disabled="currentUserInfo.summon_stone === 0">
+        <button v-if="!equipementChoosed" id="summonButton" class="bg-white hover:bg-gray-200 cursor-pointer pt-1 pl-6 pr-1 rounded-full transition ease-in-out flex justify-between" @click="startAnimation(1), openSummon = false" :disabled="currentUserInfo.summon_stone === 0">
           <span class="pt-2">Invocation</span> <span class="flex bg-gray-700 rounded-full px-4 py-2 mb-1 text-white"><img src="../assets/img/summon-stone.webp" class="w-6 h-6 mt-[2px] mr-2" />1</span>
         </button>
-        <button v-if="!equipementChoosed" id="summonMultiButton" class="bg-white hover:bg-gray-200 cursor-pointer pt-1 pl-6 pr-1 rounded-full transition ease-in-out flex justify-between" @click="startAnimation(2)" :disabled="currentUserInfo.summon_stone < 10">
+        <button v-if="!equipementChoosed" id="summonMultiButton" class="bg-white hover:bg-gray-200 cursor-pointer pt-1 pl-6 pr-1 rounded-full transition ease-in-out flex justify-between" @click="startAnimation(2), openSummon = false" :disabled="currentUserInfo.summon_stone < 10">
           <span class="pt-2">Multi-Invocation</span> <span class="flex bg-gray-700 rounded-full px-4 py-2 mb-1 text-white"><img src="../assets/img/summon-stone.webp" class="w-7 h-7 mt-[2px] mr-2" />10</span>
         </button>
         <button
@@ -81,11 +80,12 @@
           <span class="pt-2">Multi-Invocation</span> <span class="flex bg-gray-700 rounded-full px-4 py-2 mb-1 text-white"><img src="../assets/img/equipment_summon.png" class="w-7 h-7 mt-[2px] mr-2" />10</span>
         </button>
       </div>
-      <div v-if="account != 0" id="summonedCardDisplay" class="fixed top-7 w-4/6 mx-auto mt-2 grid grid-cols-5 gap-4 bg-black bg-opacity-75 rounded-xl px-8 py-4 text-white">
+      <div v-if="account != 0 && openSummon" id="summonedCardDisplay" class="fixed z-40 top-2 w-4/6 mx-auto mt-2 grid grid-cols-5 gap-4 bg-black bg-opacity-75 rounded-xl px-8 py-4 text-white">
+        <button class="absolute top-2 right-5 text-2xl" @click="ResetInvoc()">X</button>
         <div
           v-for="(card, index) in account"
           :key="index"
-          class="flex flex-col items-center"
+          class="flex flex-col items-center relative"
         >
           <img
             :src="card.image"
@@ -95,9 +95,16 @@
           />
           <p>{{ card.name }}</p>
           <div class="hidden flex space-x-2">
-            <p>Attack: {{ card.attack }}</p>
-            <p>Defense: {{ card.defense }}</p>
-            <p>Speed: {{ card.speed }}</p>
+            <p>{{ card.attack }}</p>
+            <p>{{ card.defense }}</p>
+            <p>{{ card.speed }}</p>
+          </div>
+          <div class="w-16 h-16 absolute -top-2 right-0">
+            <img v-if="card.rarity == 0" src="../assets/img/cartes/logos/r.png" alt="">
+            <img v-if="card.rarity == 1" src="../assets/img/cartes/logos/sr.png" alt="">
+            <img v-if="card.rarity == 2" src="../assets/img/cartes/logos/ssr.png" alt="">
+            <img v-if="card.rarity == 3" src="../assets/img/cartes/logos/ur.png" alt="">
+            <img v-if="card.rarity == 4" src="../assets/img/cartes/logos/lr.png" alt="">
           </div>
         </div>
       </div>
@@ -106,7 +113,8 @@
         Invocation en cours...
       </div>
 
-      <img v-if="showExplosion" src="../assets/gif/explosion.gif" alt="Explosion" class="explosion-gif" />
+      <img v-if="showExplosion" src="../assets/gif/explosion.gif" alt="Explosion" class="explosion-gif z-50" />
+      
       <level-up-popup :is-visible="showLevelUpPopup" @close="showLevelUpPopup = false" />
 
       <div class="text-white bg-black bg-opacity-80 rounded-xl p-4 absolute w-1/5 text-2xl bottom-3 left-5">
@@ -128,7 +136,7 @@ import { useAuthStore } from '../stores/auth';
 import LevelUpPopup from '../components/LevelUpPopup.vue';
 
 class Card {
-  constructor(id, name, image, attack, defense, speed, percentage_drop) {
+  constructor(id, name, image, attack, defense, speed, percentage_drop, rarity) {
     this.id =  id;
     this.name = name;
     this.image = image;
@@ -136,6 +144,7 @@ class Card {
     this.defense = defense;
     this.speed = speed;
     this.percentage_drop = percentage_drop
+    this.rarity = rarity
   }
 };
 
@@ -180,6 +189,7 @@ export default {
       showExplosion: false,
       dropdownSettings: false,
       equipementChoosed: false,
+      openSummon: false,
     };
   },
   setup(){
@@ -213,7 +223,7 @@ export default {
         const cardData = await response.json();
 
         this.availableCards = cardData.map(
-          (card) => new Card(card.id, card.name, card.image, card.attack, card.defense, card.speed, card.percentage_drop)
+          (card) => new Card(card.id, card.name, card.image, card.attack, card.defense, card.speed, card.percentage_drop, card.rarity)
         );
       } catch (error) {
         console.error('Error loading card data:', error);
@@ -584,6 +594,11 @@ export default {
       }
     },
 
+    ResetInvoc () {
+      this.openSummon = true;
+      this.account = [];
+    },
+
     showLoading() {
       this.loadingIndicator.classList.remove('hidden');
     },
@@ -640,8 +655,10 @@ export default {
         this.SummonAnim = true;
         setTimeout(() => {
           if (id == 1) {
+            this.ResetInvoc();
             this.summon();
           } else {
+            this.ResetInvoc()
             this.summonMulti(10);
           }
         }, 1500);

@@ -1,11 +1,14 @@
 <template>
   <div>
     <div class="bg-gray-200" style="min-height: 50vh; max-height: 50vh;">
+      <RouterLink to="/map" class="px-4 py-2 text-white rounded-lg bg-black absolute top-2 left-2">
+          Retour en arrière
+      </Routerlink>
       <div class="text-center py-4 text-3xl font-semibold">Prévisualisation de l'ennemi</div>
       <div class="grid grid-cols-3">
         <div v-for="enemy in stageFight" :key="enemy.id" class="flex justify-center mt-2" >
           <div class="text-center" v-if="enemy.attack !== undefined || enemy.defense !== undefined || enemy.speed !== undefined">
-            <img :src="enemy.image" alt="">
+            <img :src="enemy.image" class="w-1/3 mx-auto" alt="">
             <div class="py-2 font-semibold text-lg">{{ enemy.name }}</div> 
             <div>
               {{ enemy.attack }} | {{ enemy.defense }} | {{ enemy.speed }}
