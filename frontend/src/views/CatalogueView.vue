@@ -217,7 +217,7 @@ class Equipment {
           </div>
         </RouterLink>
       </div>
-      <h1 class="text-3xl font-bold my-4">Catalogue des Items</h1>
+      <!-- <h1 class="text-3xl font-bold my-4">Catalogue des Items</h1>
       <div class="grid grid-cols-5 gap-4 bg-black bg-opacity-80 p-10 rounded-xl">
         <div
           v-for="(items, index) in uniqueEquipment"
@@ -232,7 +232,7 @@ class Equipment {
             <p v-if="items.duplicateCount > 1">x{{ items.duplicateCount }}</p>
           </div>
         </div>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
@@ -251,7 +251,7 @@ div {
 }
 .catalogue-bg{
   background-attachment: fixed;
-  background-image: url('../assets/img/background_tavern.png');
+  background-image: url('../assets/img/catalogue/background.png');
   background-size: cover;
   background-repeat: no-repeat;
 }

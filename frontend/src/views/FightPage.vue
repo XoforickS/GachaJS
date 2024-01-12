@@ -52,6 +52,11 @@
       </div>
     </div>
   </div>
+
+  <audio autoplay loop>
+    <source src="../assets/music/city.mp3" type="audio/mp3">
+  </audio>
+
 </template>
 
 <script>
@@ -423,7 +428,7 @@ export default {
 
 <style scoped>
 .main-bg{
-  background-image: url('../assets/img/board_fight.png');
+  background-image: url('../assets/img/fight/city.png');
   background-size: cover;
   background-repeat: no-repeat;
 }

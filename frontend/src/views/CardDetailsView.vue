@@ -1,11 +1,8 @@
 <template>
 <div class="detail-bg min-h-screen">
-    <RouterLink to="/catalogue" class="absolute top-2 left-2 px-4 py-2 text-white rounded-lg bg-black">
-        Retour en arrière
-    </Routerlink>
-    <div class="grid grid-cols-2 gap-8">
-        <div class="text-center pt-8 text-white flex justify-center items-center h-screen">
-            <img :src="card.image" :alt="card.name" class="h-2/3 mb-2" />
+    <div class="grid grid-cols-2">
+        <div class="text-center text-white flex justify-center items-center h-screen">
+            <img :src="card.image" :alt="card.name" class="h-screen w-full object-cover mb-2" />
         </div>
         <div class="flex flex-col text-white bg-black bg-opacity-80 px-10 pb-10">
             <div class="flex space-x-4 justify-end my-4">
@@ -84,8 +81,13 @@
                         <span class="hidden group-hover:block absolute top-0 left-1/2 -translate-x-1/2 text-xs">{{ currentStats.speed_upgrade || 0 }}%</span>
                     </div>
                 </div>
+                <div class="pt-10">
+                  <RouterLink to="/catalogue" class="px-4 py-2 text-white rounded-lg bg-black">
+                      Retour en arrière
+                  </Routerlink>
+                </div>
             </div>
-            <div class="mt-12 mb-8 text-lg">
+            <!-- <div class="mt-12 mb-8 text-lg">
                 Mes Objets :
             </div>
             <div class="grid grid-cols-5 gap-8">
@@ -94,7 +96,7 @@
                 <div class="bg-black rounded-lg p-6">Vide</div>
                 <div class="bg-black rounded-lg p-6">Vide</div>
                 <div class="bg-black rounded-lg p-6">Vide</div>
-            </div>
+            </div> -->
         </div>
     </div>
 </div>
