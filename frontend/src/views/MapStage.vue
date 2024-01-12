@@ -10,19 +10,19 @@
       <div class="absolute z-20 fixed top-[65%] left-[68%] zone">
         Ruines
       </div>
-    <router-link to="/prepare/2" class="relative custom-1-2" :class="{ 'bg-gray-500 bg-opacity-70': currentUserInfo.currentStage < 2 }" :disabled="currentUserInfo.currentStage < 2"></router-link>
+    <router-link to="/prepare/4" class="relative custom-1-2" :class="{ 'bg-gray-500 bg-opacity-70': currentUserInfo.currentStage < 2 }" :disabled="currentUserInfo.currentStage < 2"></router-link>
       <div class="absolute z-20 fixed top-[23%] left-[65%] zone">
         Montagne
       </div>
-    <router-link to="/prepare/3" class="custom-1-3" :class="{ 'bg-gray-500  bg-opacity-70': currentUserInfo.currentStage < 3 }" :disabled="currentUserInfo.currentStage < 3"></router-link>
+    <router-link to="/prepare/7" class="custom-1-3" :class="{ 'bg-gray-500  bg-opacity-70': currentUserInfo.currentStage < 3 }" :disabled="currentUserInfo.currentStage < 3"></router-link>
       <div class="absolute z-20 fixed top-[24%] left-[12%] zone">
         <span>Desert</span><span></span>
       </div>
-    <router-link to="/prepare/4" class="custom-1-4" :class="{ 'bg-gray-500 bg-opacity-70': currentUserInfo.currentStage < 4 }" :disabled="currentUserInfo.currentStage < 4"></router-link>
+    <router-link to="/prepare/10" class="custom-1-4" :class="{ 'bg-gray-500 bg-opacity-70': currentUserInfo.currentStage < 4 }" :disabled="currentUserInfo.currentStage < 4"></router-link>
       <div class="absolute z-20 fixed top-[66%] left-[17%] zone">
         Port
       </div>
-    <router-link to="/prepare/5" class="custom-1-5" :class="{ 'bg-gray-500 bg-opacity-70': currentUserInfo.currentStage < 5 }" :disabled="currentUserInfo.currentStage < 5">
+    <router-link to="/prepare/13" class="custom-1-5" :class="{ 'bg-gray-500 bg-opacity-70': currentUserInfo.currentStage < 5 }" :disabled="currentUserInfo.currentStage < 5">
     </router-link>
   </div>
 </template>
@@ -97,12 +97,12 @@ export default {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%) skew(110deg, 20deg);
-  transition: all 0.3s ease-in-out; /* Add transition for all properties */
+  transition: all 0.3s ease-in-out;
 }
 
 .custom-1-1:hover {
-  background: rgba(255, 255, 255, 0.3); /* Use rgba to specify the background color with alpha */
-  transform: translate(-50%, -50%) skew(110deg, 20deg) scale(1.1); /* Add scale for a zoom effect */  
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%) skew(110deg, 20deg) scale(1.1);
   border: white 3px solid;
 }
 
