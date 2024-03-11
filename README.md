@@ -56,7 +56,7 @@ npm install
 npm run dev
 ```
 
-## Preview :
+## Preview
 
 Page de Login/Register : 
 
