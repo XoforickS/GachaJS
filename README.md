@@ -7,6 +7,10 @@
    - [Developpement](#developpement)
  - [Preview de l'application !](#preview)
 
+```sh
+git clone https://github.com/XoforickS/GachaJS.git
+```
+
 Une fois le projet cloné :
 
 ## Backend
