@@ -1,5 +1,5 @@
 <template>
-  <div class="catalogue-bg min-h-screen flex items-end w-full text-center">
+  <div class="catalogue-bg flex items-end w-full text-center">
     <div class="max-w-7xl mx-auto text-center pt-8 text-white pb-10">
         
       <div class="absolute top-5 right-5 flex items-center space-x-4 text-xl font-semibold tracking-tight text-white">
@@ -21,7 +21,7 @@
           <button class="w-[6vw] h-[8vh] fixed top-[46%] right-[15%]"></button>
         </RouterLink>
         <RouterLink to="/summon" >
-          <button class="w-[6vw] h-[10vh] fixed top-[17.5%] right-[46.5%]"></button>
+          <button class="w-[6vw] h-[10vh] fixed top-[16.5%] right-[46.5%] bg-white bg-opacity-40 rounded-lg"></button>
         </RouterLink>
         <RouterLink to="/catalogue" >
             <button class="w-[9vw] h-[23vh] fixed top-[31%] right-[45%] custom-bg"></button>
@@ -51,6 +51,8 @@
     
 <script>  
   import { useAuthStore } from '../stores/auth';
+  import { useRouter, useRoute } from 'vue-router'
+
   class User {
     constructor(id, username, email, xp, level, summon_stone, coin, equipment_stone, favorite_card) {
       this.id =  id;
@@ -90,8 +92,11 @@
         return {authStore}
     },
     async mounted() {
+      const router = useRouter()
       await this.loadCurrentUserInfo();
-
+      if(this.authStore.username == ''){
+        router.push('/login')
+      }
     },
     methods: {
       async loadCurrentUserInfo() {
@@ -131,7 +136,8 @@ div {
 .catalogue-bg{
   background-attachment: fixed;
   background-image: url('../assets/img/homepage/background.png');
-  background-size: cover;
+  background-size: 100% 100%;
+  min-height: 100vh;
   background-repeat: no-repeat;
 }
 
