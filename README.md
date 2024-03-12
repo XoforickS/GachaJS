@@ -7,6 +7,14 @@
    - [Developpement](#developpement)
  - [Preview de l'application !](#preview)
 
+
+### Compte de test à utiliser pour tester l'application rapidement !
+
+```sh
+CompteTest
+1234
+```
+
 ```sh
 git clone https://github.com/XoforickS/GachaJS.git
 ```
@@ -59,6 +67,7 @@ npm install
 ```sh
 npm run dev
 ```
+
 
 ## Preview
 
